@@ -8,7 +8,7 @@ For copyrights and licensing, see COPYING.
 Provides a convenient interface for listening to the WMFO web stream on
 Android devices
 
-This code is UNDER ACTIVE DEVELOPMENT. Be prepared for the occational bug.
+This code is UNDER ACTIVE DEVELOPMENT. Be prepared for the occasional bug.
 
 Usage
 -----
