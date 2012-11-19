@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="streamQualityLevels">
+    <item>High (256k)</item>
+    <item>Medium (128k)</item>
+    <item>Low (64k)</item>
+	</string-array>
+	<string-array name="streamQualityLevelValues">
+	    <item>256</item>
+    	<item>128</item>
+    	<item>64</item>
+	</string-array>
+</resources>

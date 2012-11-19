@@ -1,0 +1,125 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tiled_bg" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/wmfo_icon_20" />
+
+    <RelativeLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="128dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/shadedback"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/mainscreen_Button_play"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/play"
+                android:text="P" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignTop="@+id/mainscreen_Button_play"
+                android:layout_toRightOf="@+id/mainscreen_Button_play"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/mainscreen_Track"
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:ellipsize="marquee"
+                    android:gravity="center_horizontal"
+                    android:text="Track"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#fff" />
+
+                <TextView
+                    android:id="@+id/mainscreen_Artist"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:ellipsize="marquee"
+                    android:gravity="center_horizontal"
+                    android:text="Artist"
+                    android:singleLine="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#fff" />
+
+                <TextView
+                    android:id="@+id/mainscreen_Album"
+                    android:layout_width="match_parent"
+                    android:ellipsize="marquee"
+                    android:layout_height="18dp"
+                    android:text="Album"
+                    android:singleLine="true"
+                    android:gravity="center_horizontal"
+                    android:textColor="#fff"
+                   />
+                
+                 <TextView
+                    android:id="@+id/mainscreen_DJ"
+                    android:layout_width="match_parent"
+                    android:ellipsize="marquee"
+                    android:layout_height="18dp"
+					android:maxLines="1"
+                    android:text="DJ"
+                    android:gravity="center_horizontal"
+                    android:textColor="#fff"
+                   />
+                 
+                  <TextView
+                    android:id="@+id/mainscreen_Show"
+                    android:layout_width="match_parent"
+                    android:ellipsize="marquee"
+                    android:layout_height="18dp"
+					android:maxLines="1"
+                    android:text="Show"
+                    android:gravity="center_horizontal"
+                    android:textColor="#fff"
+                   />
+                 
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/mainscreen_Button_phone"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@+id/linearLayout2"
+                android:layout_toLeftOf="@+id/linearLayout2"
+                android:src="@drawable/phone" />
+
+        </RelativeLayout>
+
+         <ListView
+             android:id="@+id/mainscreen_twitterListLayout"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_above="@+id/linearLayout1"
+             android:cacheColorHint="#00000000"
+             android:minHeight="200dp" >
+
+        </ListView>
+
+       
+    </RelativeLayout>
+
+</FrameLayout>

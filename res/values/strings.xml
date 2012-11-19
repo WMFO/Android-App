@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">WMFO</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">WMFO Radio</string>
+    <string name="WMFO_STREAM_URL_HQ">http://webstream.wmfo.org:8000/</string>
+    <string name="WMFO_STREAM_URL_MQ">http://webstream.wmfo.org:8002/</string>
+    <string name="WMFO_STREAM_URL_LQ">http://webstream.wmfo.org:8004/</string>
+
+</resources>
