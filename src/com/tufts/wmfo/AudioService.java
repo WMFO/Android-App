@@ -1,5 +1,6 @@
 package com.tufts.wmfo;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,8 +45,10 @@ import org.xml.sax.SAXException;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -60,7 +63,10 @@ import android.net.wifi.WifiManager.WifiLock;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
 import android.os.PowerManager;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -76,6 +82,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	public static Boolean isRunning;
 	SharedPreferences appPreferences;
 	SongInfo CurrentSong;
+	long lastSawInternet;
+	boolean connectedOK;
+	boolean switching;
 	
 	ConnectivityManager connManager;
 	
@@ -93,13 +102,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	final static String TAG = "WMFO:SERVICE";
 
-
-	public class LocalBinder extends Binder {
-		AudioService getService() {
-			return AudioService.this;
-		}
-	}
-
 	@Override
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
@@ -107,6 +109,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		appPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 		updateCurrentTimer = new Timer();
+		registerReceiver(networkBroadCastReciever, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+		connectedOK = true;
+		switching = false;
+		this.lastSawInternet = System.currentTimeMillis();
 	}
 
 	@Override
@@ -117,6 +123,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		mediaPlayer.stop();
 		mediaPlayer.release();
 		mediaPlayer = null;
+		unregisterReceiver(networkBroadCastReciever);
 	}
 	
 	@Override
@@ -127,6 +134,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	public void onPrepared(MediaPlayer mp) {
 		mp.start();
+		connectedOK = true;
+		switching = false;
 		updateCurrentTimer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
@@ -181,6 +190,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	}
 	
 	public void initMediaPlayer(){
+		switching = true;
 		//Lock WIFI on
 		wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
 		wifiLock.acquire();
@@ -205,6 +215,11 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 			@Override
 			public boolean onInfo(MediaPlayer mp, int what, int extra) {
 				Log.i("WMFO:MEDIA", "Info available: " + what + ", extra: " + extra);
+				if(what == 703){
+					updateCurrentTimer.cancel();
+					showStreamError();
+					AudioService.this.stopSelf();
+				}
 				return false;
 			}});
 		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -298,16 +313,18 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				}
-				
 				if (SpinInfo != null && SpinInfo != ""){
+					AudioService.this.connectedOK=true;
 					SongInfo nowPlaying = new SongInfo(SpinInfo, true);
-					if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
-						setNotification(nowPlaying);
+					setNotification(nowPlaying);
+						if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
 						if (appPreferences.getBoolean("lastFMScrobble", false)){
 							new ScrobbleRequest(AudioService.this, CurrentSong).send();
 						}
 					}
 					CurrentSong = nowPlaying;
+				} else {
+					AudioService.this.connectedOK=false;
 				}
 				Log.d(TAG, "Done updating NP");
 			}}).start();
@@ -327,13 +344,47 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		return EntityUtils.toString(entity);
 	}
 
-	// This is the object that receives interactions from clients.  See
-	// RemoteService for a more complete example.
-	private final IBinder mBinder = new LocalBinder();
-
 	@Override
 	public IBinder onBind(Intent intent) {
-		return mBinder;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
+	private BroadcastReceiver networkBroadCastReciever =
+	        new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getExtras()!=null) {
+				NetworkInfo ni=(NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
+				if(ni!=null && ni.getState()==NetworkInfo.State.CONNECTED) {
+					Log.i("WMFO:NET","Network "+ni.getTypeName()+" connected");
+					if (!AudioService.this.connectedOK && (System.currentTimeMillis() - AudioService.this.lastSawInternet) < 15000){
+						Log.d("WMFO:NET", "Less than 15 seconds since we lost data, reconnect");
+						AudioService.this.mediaPlayer.release();
+						AudioService.this.mediaPlayer = null;
+						initMediaPlayer();
+					} else if (ni.getTypeName().equals("WIFI") && !AudioService.this.switching){
+						Log.d("WMFO:NET", "Found WIFI! Connect to it");
+						AudioService.this.lastSawInternet = System.currentTimeMillis();
+						AudioService.this.mediaPlayer.release();
+						AudioService.this.mediaPlayer = null;
+						initMediaPlayer();
+					} else if ((System.currentTimeMillis() - AudioService.this.lastSawInternet) > 15000){
+						Log.d("WMFO:NET", "Too much time since we last had internet (" + (System.currentTimeMillis() - AudioService.this.lastSawInternet) + ") - stop");
+						updateCurrentTimer.cancel();
+						showStreamError();
+						AudioService.this.stopSelf();
+					}
+				}
+			}
+			if(intent.getExtras().getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY,Boolean.FALSE)) {
+				Log.d("WMFO:NET", "Setting last saw audio time to " + System.currentTimeMillis());
+				AudioService.this.lastSawInternet = System.currentTimeMillis();
+			}
+		}
+		
+	};
+
+	
 }

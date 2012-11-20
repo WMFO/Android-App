@@ -40,6 +40,13 @@ public class SettingsActivity extends PreferenceActivity {
 			qualityFallbackLevel.setEnabled(true);
 		}
 		
+		if (appPreferences.getString("qualityLevel", null) == null){
+			appPreferencesEditor.putString("qualityLevel", "256");
+		}
+		if (appPreferences.getString("qualityFallbackLevel", null) == null){
+			appPreferencesEditor.putString("qualityFallbackLevel", "256");
+		}
+		
 		//dropQualityPreference.setChecked(appPreferences.getBoolean("SETTING_dropQuality", false));
 
 		dropQualityPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
