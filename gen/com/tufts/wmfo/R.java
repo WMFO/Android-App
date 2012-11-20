@@ -61,13 +61,18 @@ public final class R {
         public static final int activity_main=0x7f0a0000;
     }
     public static final class string {
-        public static final int WMFO_STREAM_URL_HQ=0x7f080004;
-        public static final int WMFO_STREAM_URL_LQ=0x7f080006;
-        public static final int WMFO_STREAM_URL_MQ=0x7f080005;
+        public static final int LAST_FM_API_KEY=0x7f080009;
+        public static final int LAST_FM_API_SECRET=0x7f08000a;
+        public static final int LAST_FM_API_URL=0x7f080007;
+        public static final int LAST_FM_API_URL_SECURE=0x7f080008;
+        public static final int WMFO_PHONE_NUMBER=0x7f080006;
+        public static final int WMFO_STREAM_URL_HQ=0x7f080003;
+        public static final int WMFO_STREAM_URL_LQ=0x7f080005;
+        public static final int WMFO_STREAM_URL_MQ=0x7f080004;
         public static final int app_name=0x7f080000;
-        public static final int hello_world=0x7f080001;
-        public static final int menu_settings=0x7f080002;
-        public static final int title_activity_main=0x7f080003;
+        public static final int menu_settings=0x7f080001;
+        public static final int setting_LastFM_Session_Key=0x7f08000b;
+        public static final int title_activity_main=0x7f080002;
     }
     public static final class style {
         public static final int AppTheme=0x7f090000;

@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceCategory
-                android:title="Stream Settings">
-            <ListPreference
-                android:title="Stream Quality" 
-                android:entries="@array/streamQualityLevels"
-                android:entryValues="@array/streamQualityLevelValues"
-                android:key="qualityLevel"
-                />
-            <CheckBoxPreference android:summary="Change to a lower bitrate when on mobile data"
-                android:key="dropQuality"
-                android:title="Automatic Quality"
-                />
-            <ListPreference
-                android:enabled="false"
-                android:title="Fallback Quality" 
-                android:entries="@array/streamQualityLevels"
-                android:entryValues="@array/streamQualityLevelValues"
-                android:key="qualityFallbackLevel"
-                />
-        </PreferenceCategory>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Stream Settings" >
+        <ListPreference
+            android:entries="@array/streamQualityLevels"
+            android:entryValues="@array/streamQualityLevelValues"
+            android:key="qualityLevel"
+            android:title="Stream Quality" />
+
+        <CheckBoxPreference
+            android:key="dropQuality"
+            android:summary="Change to a lower bitrate when on mobile data"
+            android:title="Automatic Quality" />
+
+        <ListPreference
+            android:enabled="false"
+            android:entries="@array/streamQualityLevels"
+            android:entryValues="@array/streamQualityLevelValues"
+            android:key="qualityFallbackLevel"
+            android:title="Fallback Quality" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Last.FM Integration" >
+        <CheckBoxPreference android:title="Scrobble Songs?"
+            android:key="lastFMScrobble"
+             />
+        <EditTextPreference
+            android:key="lastFMUsername"
+            android:title="Last.FM Username" />
+        <EditTextPreference
+            android:inputType="textPassword"
+            android:key="lastFMPassword"
+            android:title="Last.FM Password" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

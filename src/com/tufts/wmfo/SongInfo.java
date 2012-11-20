@@ -20,6 +20,14 @@ public class SongInfo {
 	int bitrate;
 	String rawDetails;
 
+	@Override
+	public boolean equals(Object other){
+		if (((SongInfo) other).artist.equals(this.artist) && ((SongInfo) other).title.equals(this.title)){
+			return true;
+		}
+		return false;
+	}
+	
 	public SongInfo(String SpinapiInfo, boolean Spinitron){
 		try {
 			this.title = stripTags(getSpan("songpart", SpinapiInfo));
@@ -65,7 +73,6 @@ public class SongInfo {
 		try {
 			return Data.substring(Data.indexOf("<span class=\"" + spanName + "\">"), Data.indexOf("</span>", Data.indexOf("<span class=\"" + spanName + "\">")));
 		} catch (Exception e){
-			Log.e("SongInfo", "Error in getSpan");
 		}
 		return "";
 	}

@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(Intent.ACTION_CALL);
-				intent.setData(Uri.parse("tel:+16176273800"));
+				intent.setData(Uri.parse(getResources().getString(R.string.WMFO_PHONE_NUMBER)));
 				if (AudioService.isRunning != null && AudioService.isRunning){
 					stopService(new Intent(MainActivity.this, AudioService.class));
 					playButton.setImageDrawable(getResources().getDrawable(R.drawable.play));

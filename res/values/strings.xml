@@ -1,11 +1,17 @@
 <resources>
-
     <string name="app_name">WMFO</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">WMFO Radio</string>
+    
     <string name="WMFO_STREAM_URL_HQ">http://webstream.wmfo.org:8000/</string>
     <string name="WMFO_STREAM_URL_MQ">http://webstream.wmfo.org:8002/</string>
     <string name="WMFO_STREAM_URL_LQ">http://webstream.wmfo.org:8004/</string>
-
+    <string name="WMFO_PHONE_NUMBER">tel:+16176273800</string>
+	
+	<string name="LAST_FM_API_URL">http://ws.audioscrobbler.com/2.0/?format=json</string>
+	<string name="LAST_FM_API_URL_SECURE">https://ws.audioscrobbler.com/2.0/?format=json</string>
+	<string name="LAST_FM_API_KEY">6e96448bf11affb604a0bdef2b811214</string>
+	<string name="LAST_FM_API_SECRET">ff6bda20ac023744e577b2d37dad8aba</string>
+	
+	<string name="setting_LastFM_Session_Key">setting_LastFM_Session_Key</string>
 </resources>

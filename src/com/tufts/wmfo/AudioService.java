@@ -75,6 +75,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	Timer updateCurrentTimer;
 	public static Boolean isRunning;
 	SharedPreferences appPreferences;
+	SongInfo CurrentSong;
 	
 	ConnectivityManager connManager;
 	
@@ -299,7 +300,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				}
 				
 				if (SpinInfo != null && SpinInfo != ""){
-					setNotification(new SongInfo(SpinInfo, true));
+					SongInfo nowPlaying = new SongInfo(SpinInfo, true);
+					if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
+						setNotification(nowPlaying);
+						if (appPreferences.getBoolean("lastFMScrobble", false)){
+							new ScrobbleRequest(AudioService.this, CurrentSong).send();
+						}
+					}
+					CurrentSong = nowPlaying;
 				}
 				Log.d(TAG, "Done updating NP");
 			}}).start();
