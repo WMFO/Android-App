@@ -167,7 +167,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		//		notification.contentView.setOnClickPendingIntent(R.id.notificationLayout_stopButton, 
 		//				PendingIntent.getActivity(getApplicationContext(), 0, stopService, 0));
 
-		notification.icon = R.drawable.ic_launcher;
+		notification.icon = R.drawable.white_icon;
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -184,7 +184,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	public void showStreamError(){
 		Notification notification = new Notification();
-		notification.icon = R.drawable.ic_launcher;
+		notification.icon = R.drawable.white_icon;
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

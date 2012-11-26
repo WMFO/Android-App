@@ -29,8 +29,9 @@ public final class R {
         public static final int shadedback=0x7f020006;
         public static final int stop=0x7f020007;
         public static final int tiled_bg=0x7f020008;
-        public static final int wmfo_icon=0x7f020009;
-        public static final int wmfo_icon_20=0x7f02000a;
+        public static final int white_icon=0x7f020009;
+        public static final int wmfo_icon=0x7f02000a;
+        public static final int wmfo_icon_20=0x7f02000b;
     }
     public static final class id {
         public static final int WMFO_NOTIFICATION_ID=0x7f070000;
