@@ -21,16 +21,10 @@
             android:title="Fallback Quality" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Last.FM Integration" >
+        <Preference android:title="Last.FM Account" android:key="lastFMSetup"/>
         <CheckBoxPreference android:title="Scrobble Songs?"
             android:key="lastFMScrobble"
              />
-        <EditTextPreference
-            android:key="lastFMUsername"
-            android:title="Last.FM Username" />
-        <EditTextPreference
-            android:inputType="textPassword"
-            android:key="lastFMPassword"
-            android:title="Last.FM Password" />
     </PreferenceCategory>
 
 </PreferenceScreen>

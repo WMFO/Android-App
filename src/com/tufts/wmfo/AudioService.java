@@ -85,9 +85,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	long lastSawInternet;
 	boolean connectedOK;
 	boolean switching;
-	
+	String currentConnection;
+
 	ConnectivityManager connManager;
-	
+
 	private static final String DEFAULT_USER_AGENT =
 			"Mozilla/5.0 (compatible; StreamScraper/1.0; +http://code.google.com/p/streamscraper/)";
 	private static final HttpParams DEFAULT_PARAMS;
@@ -112,6 +113,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		registerReceiver(networkBroadCastReciever, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
 		connectedOK = true;
 		switching = false;
+		currentConnection = connManager.getActiveNetworkInfo().getTypeName();
+		Log.d("WMFO:SERVICE", "Connected to " + currentConnection);
 		this.lastSawInternet = System.currentTimeMillis();
 	}
 
@@ -125,7 +128,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		mediaPlayer = null;
 		unregisterReceiver(networkBroadCastReciever);
 	}
-	
+
 	@Override
 	public void onStart(Intent intent, int startid) {
 		Log.d(TAG, "onStart");
@@ -136,6 +139,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		mp.start();
 		connectedOK = true;
 		switching = false;
+		currentConnection = connManager.getActiveNetworkInfo().getTypeName();
+		Log.d("WMFO:SERVICE", "Prepared on " + currentConnection);
 		updateCurrentTimer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run() {
@@ -144,29 +149,29 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 			}}, 0, 5000);
 		Log.d(TAG, "onPrepared");
 	}
-	
+
 	public void setNotification(SongInfo... nowPlaying){
 		Notification notification = new Notification();
-//		notification.contentView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.notification_layout);
-//		if (nowPlaying.length > 0) {
-//			notification.contentView.setTextViewText(R.id.notificationLayout_artist, nowPlaying[0].artist);
-//			notification.contentView.setTextViewText(R.id.notificationLayout_details, nowPlaying[0].title);
-//		} else {
-//			// assign the song name to songName
-//			notification.contentView.setTextViewText(R.id.notificationLayout_artist, "WMFO");
-//			notification.contentView.setTextViewText(R.id.notificationLayout_details, "Currently streaming");
-//		}
-//		//Handle the stop button
-//		Intent stopService = new Intent(getApplicationContext(), MainActivity.class); 
-//		stopService.putExtra("ACTION", "STOP");
-//		notification.contentView.setOnClickPendingIntent(R.id.notificationLayout_stopButton, 
-//				PendingIntent.getActivity(getApplicationContext(), 0, stopService, 0));
+		//		notification.contentView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.notification_layout);
+		//		if (nowPlaying.length > 0) {
+		//			notification.contentView.setTextViewText(R.id.notificationLayout_artist, nowPlaying[0].artist);
+		//			notification.contentView.setTextViewText(R.id.notificationLayout_details, nowPlaying[0].title);
+		//		} else {
+		//			// assign the song name to songName
+		//			notification.contentView.setTextViewText(R.id.notificationLayout_artist, "WMFO");
+		//			notification.contentView.setTextViewText(R.id.notificationLayout_details, "Currently streaming");
+		//		}
+		//		//Handle the stop button
+		//		Intent stopService = new Intent(getApplicationContext(), MainActivity.class); 
+		//		stopService.putExtra("ACTION", "STOP");
+		//		notification.contentView.setOnClickPendingIntent(R.id.notificationLayout_stopButton, 
+		//				PendingIntent.getActivity(getApplicationContext(), 0, stopService, 0));
 
 		notification.icon = R.drawable.ic_launcher;
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
-		
+
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-	            new Intent(this, MainActivity.class), 0);
+				new Intent(this, MainActivity.class), 0);
 		if (mediaPlayer != null && mediaPlayer.isPlaying()){
 			notification.tickerText = "Now Listening To WMFO";
 			notification.setLatestEventInfo(this, ((nowPlaying.length > 0) ? nowPlaying[0].artist : "WMFO") , ((nowPlaying.length > 0) ? nowPlaying[0].title : "Currently streaming"), contentIntent);
@@ -181,14 +186,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		Notification notification = new Notification();
 		notification.icon = R.drawable.ic_launcher;
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
-		
+
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-	            new Intent(this, MainActivity.class), 0);
-			notification.tickerText = "WMFO Streaming Error";
-			notification.setLatestEventInfo(this, "Stream Error" , "Could not play the stream", contentIntent);
+				new Intent(this, MainActivity.class), 0);
+		notification.tickerText = "WMFO Streaming Error";
+		notification.setLatestEventInfo(this, "Stream Error" , "Could not play the stream", contentIntent);
 		startForeground(R.id.WMFO_NOTIFICATION_ID, notification);
 	}
-	
+
 	public void initMediaPlayer(){
 		switching = true;
 		//Lock WIFI on
@@ -223,7 +228,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				return false;
 			}});
 		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		   
+
 		try {
 			if (connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() || !appPreferences.getBoolean("dropQuality", false)) {
 				Log.d(TAG, "Wifi On or no fallback");
@@ -317,8 +322,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 					AudioService.this.connectedOK=true;
 					SongInfo nowPlaying = new SongInfo(SpinInfo, true);
 					setNotification(nowPlaying);
-						if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
+					if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
 						if (appPreferences.getBoolean("lastFMScrobble", false)){
+							Log.d("WMFO:SERVICE", "Old song (" + CurrentSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
 							new ScrobbleRequest(AudioService.this, CurrentSong).send();
 						}
 					}
@@ -351,8 +357,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	}
 
 	private BroadcastReceiver networkBroadCastReciever =
-	        new BroadcastReceiver() {
-		
+			new BroadcastReceiver() {
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if(intent.getExtras()!=null) {
@@ -365,11 +371,15 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 						AudioService.this.mediaPlayer = null;
 						initMediaPlayer();
 					} else if (ni.getTypeName().equals("WIFI") && !AudioService.this.switching){
-						Log.d("WMFO:NET", "Found WIFI! Connect to it");
-						AudioService.this.lastSawInternet = System.currentTimeMillis();
-						AudioService.this.mediaPlayer.release();
-						AudioService.this.mediaPlayer = null;
-						initMediaPlayer();
+						if (!AudioService.this.currentConnection.equals("WIFI")){
+							Log.d("WMFO:NET", "Found WIFI! Connect to it");
+							AudioService.this.lastSawInternet = System.currentTimeMillis();
+							AudioService.this.mediaPlayer.release();
+							AudioService.this.mediaPlayer = null;
+							initMediaPlayer();
+						} else {
+							//Do nothing
+						}
 					} else if ((System.currentTimeMillis() - AudioService.this.lastSawInternet) > 15000){
 						Log.d("WMFO:NET", "Too much time since we last had internet (" + (System.currentTimeMillis() - AudioService.this.lastSawInternet) + ") - stop");
 						updateCurrentTimer.cancel();
@@ -383,8 +393,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				AudioService.this.lastSawInternet = System.currentTimeMillis();
 			}
 		}
-		
+
 	};
 
-	
+
 }
