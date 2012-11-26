@@ -14,112 +14,123 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="wrap_content"
-            android:layout_height="128dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:background="@drawable/shadedback"
-            android:orientation="horizontal" >
+            android:orientation="vertical" >
 
-            <ImageView
-                android:id="@+id/mainscreen_Button_play"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/play"
-                android:text="P" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout2"
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Track"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignTop="@+id/mainscreen_Button_play"
-                android:layout_toRightOf="@+id/mainscreen_Button_play"
-                android:orientation="vertical" >
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:text="Track"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fff" />
 
-                <TextView
-                    android:id="@+id/mainscreen_Track"
-                    android:layout_width="match_parent"
-                    android:layout_height="24dp"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:text="Track"
-                    android:singleLine="true"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#fff" />
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:text="Artist"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#fff" />
 
-                <TextView
-                    android:id="@+id/mainscreen_Artist"
-                    android:layout_width="match_parent"
-                    android:layout_height="18dp"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:text="Artist"
-                    android:singleLine="true"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#fff" />
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Album"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:text="Album"
+                android:textColor="#fff" />
 
-                <TextView
-                    android:id="@+id/mainscreen_Album"
-                    android:layout_width="match_parent"
-                    android:ellipsize="marquee"
-                    android:layout_height="18dp"
-                    android:text="Album"
-                    android:singleLine="true"
-                    android:gravity="center_horizontal"
-                    android:textColor="#fff"
-                   />
-                
-                 <TextView
-                    android:id="@+id/mainscreen_DJ"
-                    android:layout_width="match_parent"
-                    android:ellipsize="marquee"
-                    android:layout_height="18dp"
-					android:maxLines="1"
-                    android:text="DJ"
-                    android:gravity="center_horizontal"
-                    android:textColor="#fff"
-                   />
-                 
-                  <TextView
-                    android:id="@+id/mainscreen_Show"
-                    android:layout_width="match_parent"
-                    android:ellipsize="marquee"
-                    android:layout_height="18dp"
-					android:maxLines="1"
-                    android:text="Show"
-                    android:gravity="center_horizontal"
-                    android:textColor="#fff"
-                   />
-                 
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:text="Show"
+                android:textColor="#fff" />
 
-            </LinearLayout>
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_DJ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:text="DJ"
+                android:textColor="#fff" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/mainscreen_twitterListLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/linearLayout1"
+            android:layout_below="@+id/mainscreen_controlLayout"
+            android:cacheColorHint="#00000000"
+            android:minHeight="200dp" >
+
+        </ListView>
+
+        <RelativeLayout
+            android:id="@+id/mainscreen_controlLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/shadedback_flipped" >
 
             <ImageView
                 android:id="@+id/mainscreen_Button_phone"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_alignBottom="@+id/linearLayout2"
-                android:layout_toLeftOf="@+id/linearLayout2"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
                 android:src="@drawable/phone" />
 
+            <ImageView
+                android:id="@+id/mainscreen_Button_play"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentLeft="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/play" />
+
+            <ImageView
+                android:id="@+id/mainscreen_volume_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignTop="@+id/mainscreen_Button_phone"
+                android:layout_toRightOf="@+id/mainscreen_Button_play"
+                android:src="@drawable/volume_1" />
+
+            <SeekBar
+                android:id="@+id/mainscreen_volume_control"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@+id/mainscreen_Button_phone"
+                android:layout_toRightOf="@+id/mainscreen_volume_icon"
+                android:max="10" />
+
         </RelativeLayout>
-
-         <ListView
-             android:id="@+id/mainscreen_twitterListLayout"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_above="@+id/linearLayout1"
-             android:cacheColorHint="#00000000"
-             android:minHeight="200dp" >
-
-        </ListView>
-
-       
     </RelativeLayout>
 
 </FrameLayout>

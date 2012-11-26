@@ -21,16 +21,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnDragListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 /*
@@ -40,7 +46,7 @@ import android.widget.TextView;
  */
 
 public class MainActivity extends Activity {
-	
+
 	Timer updateCurrentTimer;
 	JSONArray twitterJSON;
 
@@ -60,7 +66,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -131,6 +137,37 @@ public class MainActivity extends Activity {
 						twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
 					}});
 			}}).start();
+
+		//Volume bar
+
+		final AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		final ImageView volumeIcon = (ImageView) findViewById(R.id.mainscreen_volume_icon);
+		//audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
+		SeekBar volumeBar = (SeekBar) findViewById(R.id.mainscreen_volume_control);
+		volumeBar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+		volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+		volumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			}
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+				
+				if (progress > 0 && progress < seekBar.getMax() / 2){
+					volumeIcon.setImageResource(R.drawable.volume_1);
+				} else if (progress == 0){
+					volumeIcon.setImageResource(R.drawable.volume_0);
+				} else {
+					volumeIcon.setImageResource(R.drawable.volume_2);
+				}
+			}
+		});
+
 	}
 
 	ArrayList<TwitterStatus> parseTwitterJSON(JSONArray twitterJSON){
@@ -139,12 +176,12 @@ public class MainActivity extends Activity {
 			return tweets;
 		}
 		for (int i=0; i < twitterJSON.length(); i++){
-				try {
-					TwitterStatus status = new TwitterStatus(twitterJSON.getJSONObject(i));
-					tweets.add(status);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+			try {
+				TwitterStatus status = new TwitterStatus(twitterJSON.getJSONObject(i));
+				tweets.add(status);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 		return tweets;
 	}
@@ -157,16 +194,16 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
-	    switch (item.getItemId()) {
-	        case R.id.menu_settings:
-	        	startActivity(new Intent(this, SettingsActivity.class));
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
-	
+
 	void setNowPlaying(){
 		String SpinInfo = null;
 		try {
@@ -179,7 +216,7 @@ public class MainActivity extends Activity {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (SpinInfo != null && SpinInfo != ""){
 			final SongInfo nowPlaying = new SongInfo(SpinInfo, true);
 			runOnUiThread(new Runnable(){
@@ -187,16 +224,16 @@ public class MainActivity extends Activity {
 				public void run() {
 					TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
 					Track.setText(nowPlaying.title);
-					
+
 					TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
 					Artist.setText("By " + nowPlaying.artist);
-					
+
 					TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
 					Album.setText("From " + nowPlaying.album);
-				
+
 					TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
 					DJ.setText("Spun by " + nowPlaying.DJ);
-					
+
 					TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
 					Show.setText("On " + nowPlaying.showName);
 				}});
