@@ -27,15 +27,11 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnDragListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -210,11 +206,8 @@ public class MainActivity extends Activity {
 			//SpinInfo = executeGET("http://wmfo-duke.orgs.tufts.edu:8000/7.html");
 			SpinInfo = executeGET("http://spinitron.com/public/newestsong.php?station=wmfo");
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
 		}
 
 		if (SpinInfo != null && SpinInfo != ""){

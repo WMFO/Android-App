@@ -13,12 +13,12 @@ import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
 import android.util.Log;
 
-public class ScrobbleRequest {
+public class LastFMNowPlayingRequest {
 
 	Context appContext;
 	SongInfo songInfo;
 	SharedPreferences appPreferences;
-	public ScrobbleRequest(Context context, SongInfo songInfo){
+	public LastFMNowPlayingRequest(Context context, SongInfo songInfo){
 		this.appContext = context;
 		this.songInfo = songInfo;
 		appPreferences = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
@@ -26,21 +26,19 @@ public class ScrobbleRequest {
 
 	public void send(){
 		if (appPreferences.getString("setting_LastFM_Session_Key", null) == null){
-			Log.w("WMFO:LASTFM", "Tried to send scrobble wihtout auth");
+			Log.w("WMFO:LASTFM", "Tried to send now playin notification wihtout auth");
 			return;
 		}
 		
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("artist", this.songInfo.artist);
 		params.put("track", this.songInfo.title);
-		params.put("timestamp", Integer.toString((int) (System.currentTimeMillis() / 1000L)));
-		params.put("chosenByUser", "0");
 		params.put("api_key", this.appContext.getResources().getString(R.string.LAST_FM_API_KEY));
 		params.put("sk", appPreferences.getString("setting_LastFM_Session_Key", null));
-		String sig = LastFM.createSignature("track.scrobble", params, this.appContext.getResources().getString(R.string.LAST_FM_API_SECRET));
+		String sig = LastFM.createSignature("track.updateNowPlaying", params, this.appContext.getResources().getString(R.string.LAST_FM_API_SECRET));
 		
 		List<NameValuePair> nameValuePairs = LastFM.hashToNameValuePair(params);
-		nameValuePairs.add(new BasicNameValuePair("method", "track.scrobble"));
+		nameValuePairs.add(new BasicNameValuePair("method", "track.updateNowPlaying"));
 		nameValuePairs.add(new BasicNameValuePair("api_sig", sig));
 		
 		String result = null;
@@ -53,7 +51,7 @@ public class ScrobbleRequest {
 		}
 		
 		if (result != null){
-			Log.d("SCROBBLE", result);
+			Log.d("NOWPLAYING", result);
 		}
 		
 	}
