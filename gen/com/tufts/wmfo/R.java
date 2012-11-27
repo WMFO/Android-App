@@ -54,8 +54,8 @@ public final class R {
         public static final int mainscreen_Artist=0x7f070004;
         public static final int mainscreen_Button_phone=0x7f07000a;
         public static final int mainscreen_Button_play=0x7f07000b;
-        public static final int mainscreen_DJ=0x7f070007;
-        public static final int mainscreen_Show=0x7f070006;
+        public static final int mainscreen_DJ=0x7f070006;
+        public static final int mainscreen_Show=0x7f070007;
         public static final int mainscreen_Track=0x7f070003;
         public static final int mainscreen_controlLayout=0x7f070009;
         public static final int mainscreen_twitterListLayout=0x7f070008;

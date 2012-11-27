@@ -57,16 +57,6 @@
                 android:textColor="#fff" />
 
             <com.tufts.wmfo.ScrollingTextView
-                android:id="@+id/mainscreen_Show"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:gravity="center_horizontal"
-                android:maxLines="1"
-                android:text="Show"
-                android:textColor="#fff" />
-
-            <com.tufts.wmfo.ScrollingTextView
                 android:id="@+id/mainscreen_DJ"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,6 +64,16 @@
                 android:gravity="center_horizontal"
                 android:maxLines="1"
                 android:text="DJ"
+                android:textColor="#fff" />
+
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:text="Show"
                 android:textColor="#fff" />
         </LinearLayout>
 
@@ -85,7 +85,6 @@
             android:layout_below="@+id/mainscreen_controlLayout"
             android:cacheColorHint="#00000000"
             android:minHeight="200dp" >
-
         </ListView>
 
         <RelativeLayout
@@ -129,7 +128,6 @@
                 android:layout_toLeftOf="@+id/mainscreen_Button_phone"
                 android:layout_toRightOf="@+id/mainscreen_volume_icon"
                 android:max="10" />
-
         </RelativeLayout>
     </RelativeLayout>
 

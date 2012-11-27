@@ -235,7 +235,7 @@ public class MainActivity extends Activity {
 					DJ.setText("Spun by " + nowPlaying.DJ);
 
 					TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-					Show.setText("On " + nowPlaying.showName);
+					Show.setText("On the show " + nowPlaying.showName);
 				}});
 		}
 	}
