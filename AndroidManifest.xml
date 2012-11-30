@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tufts.wmfo"
-    android:versionCode="9"
+    android:versionCode="12"
     android:versionName="Alpha" >
 
     <uses-sdk

@@ -23,6 +23,7 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -61,10 +62,23 @@ public class MainActivity extends Activity {
 	final static String TAG = "WMFO:SERVICE";
 
 	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) 
+	{
+		super.onSaveInstanceState(savedInstanceState);
+		if (twitterJSON != null){
+			savedInstanceState.putString("tweets", twitterJSON.toString());
+		}
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+			setContentView(R.layout.activity_main);
+		} else {
+			setContentView(R.layout.activity_main_landscape);
+		}
 
 		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
 		final ImageView phoneButton = (ImageView) findViewById(R.id.mainscreen_Button_phone);
@@ -109,31 +123,42 @@ public class MainActivity extends Activity {
 		/*
 		 * Get Twitter JSON Data 
 		 */
-		new Thread(new Runnable(){
+		if (savedInstanceState == null || !savedInstanceState.containsKey("tweets")){
+			new Thread(new Runnable(){
 
-			@Override
-			public void run() {
-				try {
-					String twitterJSONString = executeGET("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=10");
-					twitterJSON = new JSONArray(twitterJSONString);
-				} catch (ClientProtocolException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				runOnUiThread(new Runnable(){
+				@Override
+				public void run() {
+					try {
 
-					@Override
-					public void run() {
-						ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
-						twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
-					}});
-			}}).start();
+						String twitterJSONString = executeGET("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=10");
+						twitterJSON = new JSONArray(twitterJSONString);
+					} catch (ClientProtocolException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					runOnUiThread(new Runnable(){
 
+						@Override
+						public void run() {
+							ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
+							twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
+						}});
+				}}).start();
+		} else if (savedInstanceState != null){
+			Log.d("TWEETS", "Loading from saved state");
+			ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
+			try {
+				twitterJSON =new JSONArray(savedInstanceState.getString("tweets")); 
+				twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 		//Volume bar
 
 		final AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -153,7 +178,7 @@ public class MainActivity extends Activity {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-				
+
 				if (progress > 0 && progress < seekBar.getMax() / 2){
 					volumeIcon.setImageResource(R.drawable.volume_1);
 				} else if (progress == 0){

@@ -1,0 +1,138 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tiled_bg" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/wmfo_icon_20" />
+
+    <RelativeLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/mainscreen_controlLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/shadedback_solid" >
+
+            <ImageView
+                android:id="@+id/mainscreen_Button_play"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentLeft="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/play" />
+
+            <ImageView
+                android:id="@+id/mainscreen_volume_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignLeft="@+id/mainscreen_Button_play"
+                android:layout_below="@+id/mainscreen_Button_play"
+                android:src="@drawable/volume_1" />
+
+            <com.tufts.wmfo.VerticalSeekBar
+                android:id="@+id/mainscreen_volume_control"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/mainscreen_Button_phone"
+                android:layout_alignLeft="@+id/mainscreen_volume_icon"
+                android:layout_alignRight="@+id/mainscreen_volume_icon"
+                android:layout_below="@+id/mainscreen_volume_icon"
+                android:max="10" />
+
+            <ImageView
+                android:id="@+id/mainscreen_Button_phone"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignLeft="@+id/mainscreen_volume_control"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/phone" />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/mainscreen_twitterListLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/mainscreen_controlLayout"
+            android:layout_above="@+id/linearLayout1"
+            android:cacheColorHint="#00000000"
+            android:minHeight="200dp" >
+
+        </ListView>
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/mainscreen_twitterListLayout"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/shadedback_solid"
+            android:gravity="center_vertical"
+            android:orientation="vertical" >
+
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:text="Track"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fff" />
+
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:text="Artist"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#fff" />
+
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Album"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:singleLine="true"
+                android:text="Album"
+                android:textColor="#fff" />
+
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_DJ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:text="DJ"
+                android:textColor="#fff" />
+
+            <com.tufts.wmfo.ScrollingTextView
+                android:id="@+id/mainscreen_Show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:text="Show"
+                android:textColor="#fff" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</FrameLayout>

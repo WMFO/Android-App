@@ -294,13 +294,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 						if (appPreferences.getBoolean("lastFMScrobble", false)){
 							Log.d("WMFO:SERVICE", "Old song (" + CurrentSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
 							new ScrobbleRequest(AudioService.this, CurrentSong).send();
-							new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send();
 						}
-					} else if (CurrentSong == null){
-						//If it is the first run, the song will be null.
-						//We should still update the now playing.
-						new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send();
 					}
+					new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send();
 					CurrentSong = nowPlaying;
 				} else {
 					AudioService.this.connectedOK=false;
