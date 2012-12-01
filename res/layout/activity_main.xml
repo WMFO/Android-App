@@ -93,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/shadedback_flipped" >
+            android:background="@drawable/shadedback_solid" >
 
             <ImageView
                 android:id="@+id/mainscreen_Button_phone"
