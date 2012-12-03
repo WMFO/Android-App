@@ -33,9 +33,9 @@ public class LastFMNowPlayingRequest {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("artist", this.songInfo.artist);
 		params.put("track", this.songInfo.title);
-		params.put("api_key", this.appContext.getResources().getString(R.string.LAST_FM_API_KEY));
+		params.put("api_key", Auth.LAST_FM_API_KEY);
 		params.put("sk", appPreferences.getString("setting_LastFM_Session_Key", null));
-		String sig = LastFM.createSignature("track.updateNowPlaying", params, this.appContext.getResources().getString(R.string.LAST_FM_API_SECRET));
+		String sig = LastFM.createSignature("track.updateNowPlaying", params, Auth.LAST_FM_API_SECRET);
 		
 		List<NameValuePair> nameValuePairs = LastFM.hashToNameValuePair(params);
 		nameValuePairs.add(new BasicNameValuePair("method", "track.updateNowPlaying"));

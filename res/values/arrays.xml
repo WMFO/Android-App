@@ -1,13 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string-array name="streamQualityLevels">
-    <item>High (256k)</item>
-    <item>Medium (128k)</item>
-    <item>Low (64k)</item>
-	</string-array>
-	<string-array name="streamQualityLevelValues">
-	    <item>256</item>
-    	<item>128</item>
-    	<item>64</item>
-	</string-array>
+        <item>High (256k)</item>
+        <item>Medium (128k)</item>
+        <item>Low (64k)</item>
+    </string-array>
+    <string-array name="streamQualityLevelValues">
+        <item>256</item>
+        <item>128</item>
+        <item>64</item>
+    </string-array>
+    
+    <string-array name="hoursArray">
+        <item>00:00</item>
+        <item>01:00</item>
+        <item>02:00</item>
+        <item>03:00</item>
+        <item>04:00</item>
+        <item>05:00</item>
+        <item>06:00</item>
+        <item>07:00</item>
+        <item>08:00</item>
+        <item>09:00</item>
+        <item>10:00</item>
+        <item>11:00</item>
+        <item>12:00</item>
+        <item>13:00</item>
+        <item>14:00</item>
+        <item>15:00</item>
+        <item>16:00</item>
+        <item>17:00</item>
+        <item>18:00</item>
+        <item>19:00</item>
+        <item>20:00</item>
+        <item>21:00</item>
+        <item>22:00</item>
+        <item>23:00</item>
+    </string-array>
+    <string-array name="daysArray">
+        <item>1st</item>
+        <item>2nd</item>
+        <item>3rd</item>
+        <item>4th</item>
+        <item>5th</item>
+        <item>6th</item>
+        <item>7th</item>
+        <item>8th</item>
+        <item>9th</item>
+        <item>10th</item>
+        <item>11th</item>
+        <item>12th</item>
+        <item>13th</item>
+        <item>14th</item>
+        <item>15th</item>
+        <item>16th</item>
+        <item>17th</item>
+        <item>18th</item>
+        <item>19th</item>
+        <item>20th</item>
+        <item>21st</item>
+        <item>22nd</item>
+        <item>23rd</item>
+        <item>24th</item>
+        <item>25th</item>
+        <item>26th</item>
+        <item>27th</item>
+        <item>28th</item>
+        <item>29th</item>
+        <item>30th</item>
+        <item>31st</item>
+    </string-array>
+    <string-array name="monthsArray">
+        <item>January</item>
+        <item>Fedbruary</item>
+        <item>March</item>
+        <item>April</item>
+        <item>Mau</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string-array name="yearsArray">
+        <item>2012</item>
+    </string-array>
+
 </resources>

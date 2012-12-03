@@ -10,8 +10,6 @@
 	
 	<string name="LAST_FM_API_URL">http://ws.audioscrobbler.com/2.0/?format=json</string>
 	<string name="LAST_FM_API_URL_SECURE">https://ws.audioscrobbler.com/2.0/?format=json</string>
-	<string name="LAST_FM_API_KEY">6e96448bf11affb604a0bdef2b811214</string>
-	<string name="LAST_FM_API_SECRET">ff6bda20ac023744e577b2d37dad8aba</string>
 	
 	<string name="setting_LastFM_Session_Key">setting_LastFM_Session_Key</string>
 </resources>

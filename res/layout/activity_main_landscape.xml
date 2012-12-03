@@ -5,7 +5,7 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/wmfo_icon_20" />
 
@@ -40,12 +40,12 @@
 
             <com.tufts.wmfo.VerticalSeekBar
                 android:id="@+id/mainscreen_volume_control"
-                android:layout_width="20dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/mainscreen_Button_phone"
                 android:layout_alignLeft="@+id/mainscreen_volume_icon"
-                android:layout_alignRight="@+id/mainscreen_volume_icon"
                 android:layout_below="@+id/mainscreen_volume_icon"
+                android:layout_marginLeft="10dp"
                 android:max="10" />
 
             <ImageView
@@ -57,25 +57,183 @@
                 android:src="@drawable/phone" />
         </RelativeLayout>
 
-        <ListView
-            android:id="@+id/mainscreen_twitterListLayout"
+        <TabHost
+            android:id="@android:id/tabhost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/mainscreen_controlLayout"
             android:layout_above="@+id/linearLayout1"
-            android:cacheColorHint="#00000000"
-            android:minHeight="200dp" >
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/mainscreen_controlLayout" >
 
-        </ListView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </TabWidget>
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <ListView
+                        android:id="@+id/mainscreen_twitterListLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:cacheColorHint="#00000000"
+                        android:minHeight="200dp" >
+                    </ListView>
+
+                    <ListView
+                        android:id="@+id/mainscreen_playlistLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:cacheColorHint="#00000000"
+                        android:minHeight="200dp" >
+                    </ListView>
+
+                    <ScrollView
+                        android:id="@+id/mainscreen_archivePickerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/textView1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:text="Select the period to replay"
+                                android:textColor="#FFF"
+                                android:textSize="16dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <Spinner
+                                    android:id="@+id/spinner_fromDay"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/daysArray"
+                                    android:spinnerMode="dropdown"
+                                    />
+
+                                <Spinner
+                                    android:id="@+id/spinner_fromMonth"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/monthsArray"
+                                    android:spinnerMode="dropdown"
+                                    />
+
+                                <Spinner
+                                    android:id="@+id/spinner_fromYear"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/yearsArray"
+                                    android:spinnerMode="dropdown"
+                                    />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <Spinner
+                                    android:id="@+id/spinner_fromHour"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/hoursArray"
+                                    android:spinnerMode="dropdown"
+                                    />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_horizontal"
+                                    android:maxLines="1"
+                                    android:text=" to "
+                                    android:textColor="#fff" />
+
+                                <Spinner
+                                    android:id="@+id/spinner_toHour"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/hoursArray"
+                                    android:spinnerMode="dropdown"
+                                    />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <Spinner
+                                    android:id="@+id/spinner_toDay"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/daysArray"
+                                    android:spinnerMode="dropdown"
+                                    />
+
+                                <Spinner
+                                    android:id="@+id/spinner_toMonth"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/monthsArray"
+                                    android:spinnerMode="dropdown"
+                                     />
+
+                                <Spinner
+                                    android:id="@+id/spinner_toYear"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/yearsArray"
+                                    android:spinnerMode="dropdown"
+                                    />
+                            </LinearLayout>
+
+                            <Button
+                                android:id="@+id/archive_playButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:text="Play Archive"
+                                android:textColor="#fff" />
+                        </LinearLayout>
+                    </ScrollView>
+                </FrameLayout>
+            </LinearLayout>
+        </TabHost>
 
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/mainscreen_twitterListLayout"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/mainscreen_controlLayout"
             android:background="@drawable/shadedback_solid"
             android:gravity="center_vertical"
             android:orientation="vertical" >

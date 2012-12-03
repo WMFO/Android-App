@@ -34,6 +34,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
@@ -51,6 +52,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	boolean connectedOK;
 	boolean switching;
 	String currentConnection;
+	String mediaSourceURL;
+	public static Boolean isLive;
 
 	ConnectivityManager connManager;
 
@@ -72,6 +75,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
 		isRunning = true;
+		isLive = false;
 		connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		appPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 		updateCurrentTimer = new Timer();
@@ -100,6 +104,44 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	@Override
 	public void onStart(Intent intent, int startid) {
 		Log.d(TAG, "onStart");
+		Bundle extras = intent.getExtras();
+		if (extras.containsKey("source")){
+			if (extras.getString("source").equals(getString(R.string.WMFO_STREAM_URL_HQ))){
+				this.isLive = true;
+				if (connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() || !appPreferences.getBoolean("dropQuality", false)) {
+					Log.d(TAG, "Wifi On or no fallback");
+					String qualityLevel = appPreferences.getString("qualityLevel", "256");
+					if (qualityLevel.equals("256")){
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+					} else if (qualityLevel.equals("128")){
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_MQ);
+					} else if (qualityLevel.equals("64")){
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_LQ);
+					} else {
+						//dafuq
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+					}
+				} else {
+					Log.d(TAG, "Wifi Off and fallback");
+					String qualityLevel = appPreferences.getString("qualityFallbackLevel", "128");
+					if (qualityLevel.equals("256")){
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+					} else if (qualityLevel.equals("128")){
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_MQ);
+					} else if (qualityLevel.equals("64")){
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_LQ);
+					} else {
+						//dafuq
+						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+					}
+				}
+			} else {
+				this.mediaSourceURL = extras.getString("source");
+			}
+
+		} else {
+			this.isLive = false;
+		}
 		initMediaPlayer();
 	}
 
@@ -198,33 +240,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
 		try {
-			if (connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() || !appPreferences.getBoolean("dropQuality", false)) {
-				Log.d(TAG, "Wifi On or no fallback");
-				String qualityLevel = appPreferences.getString("qualityLevel", "256");
-				if (qualityLevel.equals("256")){
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_HQ));
-				} else if (qualityLevel.equals("128")){
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_MQ));
-				} else if (qualityLevel.equals("64")){
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_LQ));
-				} else {
-					//dafuq
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_HQ));
-				}
-			} else {
-				Log.d(TAG, "Wifi Off and fallback");
-				String qualityLevel = appPreferences.getString("qualityFallbackLevel", "128");
-				if (qualityLevel.equals("256")){
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_HQ));
-				} else if (qualityLevel.equals("128")){
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_MQ));
-				} else if (qualityLevel.equals("64")){
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_LQ));
-				} else {
-					//dafuq
-					mediaPlayer.setDataSource(getString(R.string.WMFO_STREAM_URL_HQ));
-				}
-			}
+			mediaPlayer.setDataSource(this.mediaSourceURL);
 			mediaPlayer.prepareAsync(); // might take long! (for buffering, etc)
 			mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
 			setNotification();
@@ -289,15 +305,23 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				if (SpinInfo != null && SpinInfo != ""){
 					AudioService.this.connectedOK=true;
 					SongInfo nowPlaying = new SongInfo(SpinInfo, true);
-					setNotification(nowPlaying);
+					if (isLive) { 
+						setNotification(nowPlaying);
+					} else {
+						nowPlaying.title = "Playing archives";
+						nowPlaying.artist = "WMFO";
+						setNotification(nowPlaying);
+					}
 					if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
+						SongInfo oldSong = CurrentSong;
+						CurrentSong = nowPlaying;
 						if (appPreferences.getBoolean("lastFMScrobble", false)){
-							Log.d("WMFO:SERVICE", "Old song (" + CurrentSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
-							new ScrobbleRequest(AudioService.this, CurrentSong).send();
+							Log.d("WMFO:SERVICE", "Old song (" + oldSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
+							if (isLive) { new ScrobbleRequest(AudioService.this, oldSong).send(); }
 						}
 					}
-					new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send();
-					CurrentSong = nowPlaying;
+					if (isLive) { new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send(); }
+					
 				} else {
 					AudioService.this.connectedOK=false;
 				}

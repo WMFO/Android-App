@@ -35,9 +35,9 @@ public class ScrobbleRequest {
 		params.put("track", this.songInfo.title);
 		params.put("timestamp", Integer.toString((int) (System.currentTimeMillis() / 1000L)));
 		params.put("chosenByUser", "0");
-		params.put("api_key", this.appContext.getResources().getString(R.string.LAST_FM_API_KEY));
+		params.put("api_key", Auth.LAST_FM_API_KEY);
 		params.put("sk", appPreferences.getString("setting_LastFM_Session_Key", null));
-		String sig = LastFM.createSignature("track.scrobble", params, this.appContext.getResources().getString(R.string.LAST_FM_API_SECRET));
+		String sig = LastFM.createSignature("track.scrobble", params, Auth.LAST_FM_API_SECRET);
 		
 		List<NameValuePair> nameValuePairs = LastFM.hashToNameValuePair(params);
 		nameValuePairs.add(new BasicNameValuePair("method", "track.scrobble"));

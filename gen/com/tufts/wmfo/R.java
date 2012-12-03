@@ -9,8 +9,12 @@ package com.tufts.wmfo;
 
 public final class R {
     public static final class array {
+        public static final int daysArray=0x7f050003;
+        public static final int hoursArray=0x7f050002;
+        public static final int monthsArray=0x7f050004;
         public static final int streamQualityLevelValues=0x7f050001;
         public static final int streamQualityLevels=0x7f050000;
+        public static final int yearsArray=0x7f050005;
     }
     public static final class attr {
     }
@@ -40,47 +44,58 @@ public final class R {
     }
     public static final class id {
         public static final int WMFO_NOTIFICATION_ID=0x7f070000;
-        public static final int frameLayout1=0x7f07000e;
+        public static final int archive_playButton=0x7f070015;
+        public static final int frameLayout1=0x7f07001a;
         public static final int imageView1=0x7f070001;
-        public static final int label=0x7f070019;
-        public static final int largetext=0x7f070018;
-        public static final int lastFM_auth_errorMessage=0x7f070010;
-        public static final int lastFM_auth_inputLayout=0x7f07000f;
-        public static final int lastFM_auth_loginButton=0x7f070013;
-        public static final int lastFM_auth_password=0x7f070012;
-        public static final int lastFM_auth_progressBar=0x7f070014;
-        public static final int lastFM_auth_username=0x7f070011;
+        public static final int label=0x7f070025;
+        public static final int largetext=0x7f070024;
+        public static final int lastFM_auth_errorMessage=0x7f07001c;
+        public static final int lastFM_auth_inputLayout=0x7f07001b;
+        public static final int lastFM_auth_loginButton=0x7f07001f;
+        public static final int lastFM_auth_password=0x7f07001e;
+        public static final int lastFM_auth_progressBar=0x7f070020;
+        public static final int lastFM_auth_username=0x7f07001d;
         public static final int linearLayout1=0x7f070002;
         public static final int mainscreen_Album=0x7f070005;
         public static final int mainscreen_Artist=0x7f070004;
-        public static final int mainscreen_Button_phone=0x7f07000a;
-        public static final int mainscreen_Button_play=0x7f07000b;
+        public static final int mainscreen_Button_phone=0x7f070016;
+        public static final int mainscreen_Button_play=0x7f070017;
         public static final int mainscreen_DJ=0x7f070006;
         public static final int mainscreen_Show=0x7f070007;
         public static final int mainscreen_Track=0x7f070003;
-        public static final int mainscreen_controlLayout=0x7f070009;
-        public static final int mainscreen_twitterListLayout=0x7f070008;
-        public static final int mainscreen_volume_control=0x7f07000d;
-        public static final int mainscreen_volume_icon=0x7f07000c;
-        public static final int menu_settings=0x7f07001a;
-        public static final int notificationLayout_artist=0x7f070016;
-        public static final int notificationLayout_details=0x7f070017;
-        public static final int notificationLayout_stopButton=0x7f070015;
+        public static final int mainscreen_archivePickerLayout=0x7f07000b;
+        public static final int mainscreen_controlLayout=0x7f070008;
+        public static final int mainscreen_playlistLayout=0x7f070009;
+        public static final int mainscreen_twitterListLayout=0x7f07000a;
+        public static final int mainscreen_volume_control=0x7f070019;
+        public static final int mainscreen_volume_icon=0x7f070018;
+        public static final int menu_settings=0x7f070026;
+        public static final int notificationLayout_artist=0x7f070022;
+        public static final int notificationLayout_details=0x7f070023;
+        public static final int notificationLayout_stopButton=0x7f070021;
+        public static final int spinner_fromDay=0x7f07000d;
+        public static final int spinner_fromHour=0x7f070010;
+        public static final int spinner_fromMonth=0x7f07000e;
+        public static final int spinner_fromYear=0x7f07000f;
+        public static final int spinner_toDay=0x7f070012;
+        public static final int spinner_toHour=0x7f070011;
+        public static final int spinner_toMonth=0x7f070013;
+        public static final int spinner_toYear=0x7f070014;
+        public static final int textView1=0x7f07000c;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int activity_main_landscape=0x7f030001;
         public static final int lastfm_login=0x7f030002;
         public static final int notification_layout=0x7f030003;
-        public static final int tweet=0x7f030004;
-        public static final int tweet_listview_layout=0x7f030005;
+        public static final int playlist_listview_layout=0x7f030004;
+        public static final int tweet=0x7f030005;
+        public static final int tweet_listview_layout=0x7f030006;
     }
     public static final class menu {
         public static final int activity_main=0x7f0a0000;
     }
     public static final class string {
-        public static final int LAST_FM_API_KEY=0x7f080009;
-        public static final int LAST_FM_API_SECRET=0x7f08000a;
         public static final int LAST_FM_API_URL=0x7f080007;
         public static final int LAST_FM_API_URL_SECURE=0x7f080008;
         public static final int WMFO_PHONE_NUMBER=0x7f080006;
@@ -89,7 +104,7 @@ public final class R {
         public static final int WMFO_STREAM_URL_MQ=0x7f080004;
         public static final int app_name=0x7f080000;
         public static final int menu_settings=0x7f080001;
-        public static final int setting_LastFM_Session_Key=0x7f08000b;
+        public static final int setting_LastFM_Session_Key=0x7f080009;
         public static final int title_activity_main=0x7f080002;
     }
     public static final class style {

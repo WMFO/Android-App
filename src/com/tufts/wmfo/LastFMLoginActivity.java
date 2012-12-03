@@ -48,8 +48,8 @@ public class LastFMLoginActivity extends Activity {
 					public void run() {
 						JSONObject results = LastFM.processAuth(LastFMLoginActivity.this, lastfmUsername.getEditableText().toString(),
 								lastfmPassword.getEditableText().toString(),
-								getResources().getString(R.string.LAST_FM_API_KEY),
-								getResources().getString(R.string.LAST_FM_API_SECRET));
+								Auth.LAST_FM_API_KEY,
+								Auth.LAST_FM_API_SECRET);
 						Log.d("WMFO:LASTFM", results.toString());
 						if (results.has("session")){
 							SharedPreferences.Editor editor = appPreferences.edit();

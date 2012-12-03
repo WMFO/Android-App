@@ -1,5 +1,8 @@
 package com.tufts.wmfo;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import android.util.Log;
 
 public class SongInfo {
@@ -19,7 +22,7 @@ public class SongInfo {
 	int uniqueListeners;
 	int bitrate;
 	String rawDetails;
-
+	
 	@Override
 	public boolean equals(Object other){
 		if (((SongInfo) other).artist.equals(this.artist) && ((SongInfo) other).title.equals(this.title)){
@@ -151,6 +154,28 @@ public class SongInfo {
 		album = rawDetails.substring(rawDetails.indexOf(", from") + 7, rawDetails.length());
 		Log.d("Album", album);
 
+	}
+
+	
+	
+	public SongInfo(Node item) {
+		NodeList details = item.getChildNodes();
+		this.rawDetails = null;
+		for (int i=0; i < details.getLength(); i++){
+			if (details.item(i).getNodeName().equals("description")){
+				this.rawDetails = details.item(i).getTextContent();
+			}
+		}
+		
+//		if (this.rawDetails != null){
+//			//Name: description value: null text 'RESTLESS' by Butterknife from Do the Needful - EP (Butterknife, 2012, Rock) spun at 7:47pm EST Sat Dec 1st 2012 by Phil on The Dweezil Show, WMFO Medford
+//			int lastIndex = 0;
+//			title = rawDetails.substring(1, rawDetails.indexOf("'", 2));
+//			lastIndex = rawDetails.indexOf("'", 2);
+//			artist = rawDetails.substring(rawDetails.indexOf(" by ", lastIndex), rawDetails.indexOf(" from ", lastIndex));
+//			lastIndex = rawDetails.indexOf(" from ", lastIndex);
+//			album = rawDetails.substring(rawDetails.indexOf("from ", lastIndex), rawDetails.indexOf("(", lastIndex));
+//		}
 	}
 
 }
