@@ -41,6 +41,7 @@ public final class R {
         public static final int white_icon=0x7f02000e;
         public static final int wmfo_icon=0x7f02000f;
         public static final int wmfo_icon_20=0x7f020010;
+        public static final int wmfo_splash=0x7f020011;
     }
     public static final class id {
         public static final int WMFO_NOTIFICATION_ID=0x7f070000;

@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,6 +36,7 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -96,8 +98,8 @@ public class MainActivity extends TabActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
+
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
 			setContentView(R.layout.activity_main);
 		} else {
@@ -424,7 +426,6 @@ public class MainActivity extends TabActivity {
 				}
 			}
 		});
-
 
 	}
 

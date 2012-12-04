@@ -312,16 +312,21 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 						nowPlaying.artist = "WMFO";
 						setNotification(nowPlaying);
 					}
+
 					if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
 						SongInfo oldSong = CurrentSong;
+						Log.d("WMFO:SERVICE", "Old song (" + oldSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
 						CurrentSong = nowPlaying;
 						if (appPreferences.getBoolean("lastFMScrobble", false)){
-							Log.d("WMFO:SERVICE", "Old song (" + oldSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
-							if (isLive) { new ScrobbleRequest(AudioService.this, oldSong).send(); }
+							if (isLive) { 
+								new ScrobbleRequest(AudioService.this, oldSong).send(); 
+							}
 						}
+					} else {
+						CurrentSong = nowPlaying;
 					}
 					if (isLive) { new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send(); }
-					
+
 				} else {
 					AudioService.this.connectedOK=false;
 				}
