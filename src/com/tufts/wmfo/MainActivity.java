@@ -105,8 +105,26 @@ public class MainActivity extends TabActivity {
 		} else {
 			setContentView(R.layout.activity_main_landscape);
 		}
+
+		saveStateIndependentSetup();
+
+		if (savedInstanceState == null){
+			noSaveStateSetup();
+		} else {
+			saveStateSetup(savedInstanceState);
+		}
+
+	}
+
+
+	private void saveStateIndependentSetup(){
+
 		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
 		final ImageView phoneButton = (ImageView) findViewById(R.id.mainscreen_Button_phone);
+
+		/*
+		 * Phone in button 
+		 */
 		phoneButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -119,21 +137,18 @@ public class MainActivity extends TabActivity {
 				MainActivity.this.startActivity(intent);
 			}
 		});
+
+		/*
+		 * Play audio button
+		 * - Show correct icon for service state
+		 * - Add click listener to start/stop service 
+		 */
 		if (AudioService.isRunning != null && AudioService.isRunning){
 			playButton.setImageDrawable(getResources().getDrawable(R.drawable.stop));
 		} else {
 			playButton.setImageDrawable(getResources().getDrawable(R.drawable.play));
 		}
-		if (AudioService.isRunning != null && AudioService.isRunning && !AudioService.isLive){
-		} else {
-			updateCurrentTimer = new Timer();
-			updateCurrentTimer.scheduleAtFixedRate(new TimerTask(){
-				@Override
-				public void run() {
-					setNowPlaying();
-					//updateCurrentTimer.schedule(this, 1000);
-				}}, 0, 10000);
-		}
+
 		playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -160,71 +175,27 @@ public class MainActivity extends TabActivity {
 			}
 		});
 
-		/*
-		 * Restore text
-		 */
 
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
-			Track.setText(savedInstanceState.getString("nowplaying_track"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
-			Artist.setText(savedInstanceState.getString("nowplaying_artist"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
-			Album.setText(savedInstanceState.getString("nowplaying_album"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
-			DJ.setText(savedInstanceState.getString("nowplaying_dj"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-			Show.setText(savedInstanceState.getString("nowplaying_show"));
-		}
 		/*
-		 * Get Twitter JSON Data 
+		 * Update timers
+		 * - Now playing timer should run if live streaming
 		 */
-		if (savedInstanceState == null || !savedInstanceState.containsKey("tweets")){
-			new Thread(new Runnable(){
-
+		if (AudioService.isRunning != null && AudioService.isRunning && !AudioService.isLive){
+			//Do not pull now playing live, since it will not be relevant
+		} else {
+			updateCurrentTimer = new Timer();
+			updateCurrentTimer.scheduleAtFixedRate(new TimerTask(){
 				@Override
 				public void run() {
-					try {
-
-						String twitterJSONString = executeGET("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=10");
-						twitterJSON = new JSONArray(twitterJSONString);
-
-					} catch (ClientProtocolException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-					runOnUiThread(new Runnable(){
-
-						@Override
-						public void run() {
-							ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
-							twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
-						}});
-				}}).start();
-		} else if (savedInstanceState != null){
-			Log.d("TWEETS", "Loading from saved state");
-			ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
-			try {
-				twitterJSON =new JSONArray(savedInstanceState.getString("tweets")); 
-				twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+					setNowPlaying();
+					//updateCurrentTimer.schedule(this, 1000);
+				}}, 0, 10000);
 		}
-		//Volume bar
+
+
+		/*
+		 * Volume bar setup
+		 */
 
 		final AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 		final ImageView volumeIcon = (ImageView) findViewById(R.id.mainscreen_volume_icon);
@@ -254,7 +225,10 @@ public class MainActivity extends TabActivity {
 			}
 		});
 
-		//Tabs
+
+		/*
+		 * Tab setup
+		 */
 		TabHost ourTabHost = getTabHost();//(TabHost) findViewById(android.R.id.tabhost);
 		TabSpec playlistTab = ourTabHost.newTabSpec("Playlist");
 		playlistTab.setIndicator("Playlist");
@@ -271,6 +245,13 @@ public class MainActivity extends TabActivity {
 		archiveTab.setContent(R.id.mainscreen_archivePickerLayout);
 		ourTabHost.addTab(archiveTab);
 
+		setupArchivePlayerView();
+		
+	}
+	
+	private void setupArchivePlayerView(){
+		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
+		
 		final Spinner fromDay = (Spinner) findViewById(R.id.spinner_fromDay);
 		final Spinner fromMonth = (Spinner) findViewById(R.id.spinner_fromMonth);
 		final Spinner fromYear = (Spinner) findViewById(R.id.spinner_fromYear);
@@ -426,6 +407,73 @@ public class MainActivity extends TabActivity {
 				}
 			}
 		});
+	}
+
+	private void noSaveStateSetup(){
+		/*
+		 * Fetch twitter data
+		 */
+		new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try {
+					String twitterJSONString = executeGET("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=10");
+					twitterJSON = new JSONArray(twitterJSONString);
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				runOnUiThread(new Runnable(){
+					@Override
+					public void run() {
+						ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
+						twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
+					}});
+			}}).start();
+	}
+
+	private void saveStateSetup(Bundle savedInstanceState){
+		/*
+		 * Restore now playing text
+		 */
+
+		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
+			TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
+			Track.setText(savedInstanceState.getString("nowplaying_track"));
+		}
+		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
+			TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
+			Artist.setText(savedInstanceState.getString("nowplaying_artist"));
+		}
+		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
+			TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
+			Album.setText(savedInstanceState.getString("nowplaying_album"));
+		}
+		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
+			TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
+			DJ.setText(savedInstanceState.getString("nowplaying_dj"));
+		}
+		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
+			TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
+			Show.setText(savedInstanceState.getString("nowplaying_show"));
+		}
+
+		/*
+		 * Restore tweet data
+		 */
+		Log.d("TWEETS", "Loading from saved state");
+		ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
+		try {
+			twitterJSON =new JSONArray(savedInstanceState.getString("tweets")); 
+			twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
 	}
 
