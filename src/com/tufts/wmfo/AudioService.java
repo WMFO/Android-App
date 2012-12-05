@@ -377,6 +377,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 						} else {
 							//Do nothing
 						}
+					} else if (ni.getTypeName().equals("mobile_mms")){
+						//Ignore
 					} else if ((System.currentTimeMillis() - AudioService.this.lastSawInternet) > 15000){
 						Log.d("WMFO:NET", "Too much time since we last had internet (" + (System.currentTimeMillis() - AudioService.this.lastSawInternet) + ") - stop");
 						updateCurrentTimer.cancel();

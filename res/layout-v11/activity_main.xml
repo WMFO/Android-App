@@ -125,112 +125,46 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical" >
-
-                            <TextView
-                                android:id="@+id/textView1"
+							
+                            <CalendarView xmlns:tools="http://schemas.android.com/tools"
+                                tools:ignore="NewApi"
+                                android:id="@+id/archive_datePickerCalendar"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_horizontal"
-                                android:text="Select the period to replay"
-                                android:textColor="#FFF"
-                                android:textSize="16dp" />
+                                android:layout_height="229dp" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <Spinner
-                                    android:id="@+id/spinner_fromDay"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:entries="@array/daysArray"
-                                    android:spinnerMode="dropdown"
-                                    />
-
-                                <Spinner
-                                    android:id="@+id/spinner_fromMonth"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:entries="@array/monthsArray"
-                                    android:spinnerMode="dropdown"
-                                     />
-
-                                <Spinner
-                                    android:id="@+id/spinner_fromYear"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:entries="@array/yearsArray"
-                                    android:spinnerMode="dropdown"
-                                    />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <Spinner
-                                    android:id="@+id/spinner_fromHour"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:entries="@array/hoursArray"
-                                    android:spinnerMode="dropdown"
-                                     />
+                                android:layout_height="wrap_content" >
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:gravity="center_horizontal"
-                                    android:maxLines="1"
-                                    android:text=" to "
-                                    android:textColor="#fff" />
+                                    android:layout_weight="1"
+                                    android:text="Play from"
+                                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                                 <Spinner
-                                    android:id="@+id/spinner_toHour"
+                                    android:id="@+id/spinner_playFromHour"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:entries="@array/hoursArray"
-                                    android:spinnerMode="dropdown"
-                                    />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <Spinner
-                                    android:id="@+id/spinner_toDay"
+                                    android:spinnerMode="dropdown" />
+                                
+                                <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:entries="@array/daysArray"
-                                    android:spinnerMode="dropdown"
-                                    />
-
+                                    android:text=" to "
+                                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                                
                                 <Spinner
-                                    android:id="@+id/spinner_toMonth"
+                                    android:id="@+id/spinner_playToHour"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:entries="@array/monthsArray"
-                                    android:spinnerMode="dropdown"
-                                    />
-
-                                <Spinner
-                                    android:id="@+id/spinner_toYear"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:entries="@array/yearsArray"
-                                    android:spinnerMode="dropdown"
-                                    />
+                                    android:entries="@array/hoursArray"
+                                    android:spinnerMode="dropdown" />
                             </LinearLayout>
 
                             <Button
@@ -239,7 +173,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
                                 android:text="Play Archive"
-                                android:textColor="#fff" />
+                                />
+
                         </LinearLayout>
                     </ScrollView>
                 </FrameLayout>

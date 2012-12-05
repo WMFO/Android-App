@@ -26,6 +26,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TabActivity;
@@ -35,6 +36,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -43,6 +45,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.CalendarView.OnDateChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -62,6 +66,9 @@ public class MainActivity extends TabActivity {
 	Timer updateCurrentTimer;
 	JSONArray twitterJSON;
 
+	boolean isLive;
+	String archiveStart;
+	String archiveEnd;
 	private static final String DEFAULT_USER_AGENT =
 			"Mozilla/5.0 (compatible; StreamScraper/1.0; +http://code.google.com/p/streamscraper/)";
 	private static final HttpParams DEFAULT_PARAMS;
@@ -94,17 +101,20 @@ public class MainActivity extends TabActivity {
 		savedInstanceState.putString("nowplaying_dj", DJ.getText().toString());
 		TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
 		savedInstanceState.putString("nowplaying_show", Show.getText().toString());
+
+		savedInstanceState.putBoolean("isLive", this.isLive);
+
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-			setContentView(R.layout.activity_main);
-		} else {
-			setContentView(R.layout.activity_main_landscape);
-		}
+		//		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+		setContentView(R.layout.activity_main);
+		//		} else {
+		//			setContentView(R.layout.activity_main_landscape);
+		//		}
 
 		saveStateIndependentSetup();
 
@@ -245,13 +255,197 @@ public class MainActivity extends TabActivity {
 		archiveTab.setContent(R.id.mainscreen_archivePickerLayout);
 		ourTabHost.addTab(archiveTab);
 
-		setupArchivePlayerView();
-		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+			Log.d("API", "Api version " + Build.VERSION.SDK_INT + ", loading calendar");
+			setupArchivePlayerView();
+		} else {
+			Log.d("API", "Api version " + Build.VERSION.SDK_INT + ", loading spinners");
+			setupArchivePlayerViewV8();
+		}
+
 	}
-	
+
+	@TargetApi(11)
 	private void setupArchivePlayerView(){
 		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
-		
+		final Spinner playFromHour = (Spinner) findViewById(R.id.spinner_playFromHour);
+		final Spinner playToHour = (Spinner) findViewById(R.id.spinner_playToHour);
+
+		Button playArchiveButton = (Button) findViewById(R.id.archive_playButton);
+
+		final GregorianCalendar fromDate = new GregorianCalendar();
+		final GregorianCalendar toDate = new GregorianCalendar();
+
+		CalendarView myCalendar = (CalendarView) findViewById(R.id.archive_datePickerCalendar);
+		myCalendar.setOnDateChangeListener(new OnDateChangeListener(){
+			public void onSelectedDayChange(CalendarView view, int year, int month, int day){
+				fromDate.set(year, month, day);
+				toDate.set(year, month, day);
+			}
+		});
+
+		playArchiveButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				fromDate.set(GregorianCalendar.HOUR_OF_DAY, playFromHour.getSelectedItemPosition());
+				fromDate.set(GregorianCalendar.MINUTE, 0);
+				toDate.set(GregorianCalendar.HOUR_OF_DAY, playToHour.getSelectedItemPosition());
+				toDate.set(GregorianCalendar.MINUTE, 0);
+
+				GregorianCalendar today = new GregorianCalendar();
+				if (toDate.before(fromDate)){
+					//No
+					runOnUiThread(new Runnable(){
+						@Override
+						public void run() {
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+									MainActivity.this);
+
+							alertDialogBuilder.setTitle("Oops");
+							alertDialogBuilder
+							.setMessage("Start time can't be before the end time!")
+							.setCancelable(false)
+							.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,int id) {
+								}
+							});
+							AlertDialog alertDialog = alertDialogBuilder.create();
+							alertDialog.show();
+						}});
+					Log.d("ARCHIVES", "Fromdate (" + fromDate.toString() + ") is after todate (" + toDate.toString() + ")");
+				} else if (toDate.after(today) || fromDate.after(today)) {
+					runOnUiThread(new Runnable(){
+						@Override
+						public void run() {
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+									MainActivity.this);
+
+							alertDialogBuilder.setTitle("Oops");
+							alertDialogBuilder
+							.setMessage("You cannot listen to the future!")
+							.setCancelable(false)
+							.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,int id) {
+								}
+							});
+							AlertDialog alertDialog = alertDialogBuilder.create();
+							alertDialog.show();
+						}});
+				} else if ((today.getTime().getTime() - fromDate.getTime().getTime()) > 1000 * 60 * 60 * 24 * 14) {
+					//Over two weeks ago
+					runOnUiThread(new Runnable(){
+						@Override
+						public void run() {
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+									MainActivity.this);
+							alertDialogBuilder.setTitle("Sorry");
+							alertDialogBuilder
+							.setMessage("Due to legal reasons, we cannot keep archives over two weeks.")
+							.setCancelable(false)
+							.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,int id) {
+								}
+							});
+							AlertDialog alertDialog = alertDialogBuilder.create();
+							alertDialog.show();
+
+						}});
+					Log.d("ARCHIVES", "Fromdate (" + fromDate.toString() + ") is over two weeks ago");
+				} else if (fromDate.compareTo(toDate) == 0) {
+					//Over two weeks ago
+					runOnUiThread(new Runnable(){
+						@Override
+						public void run() {
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+									MainActivity.this);
+							alertDialogBuilder.setTitle("Oops");
+							alertDialogBuilder
+							.setMessage("Can't start and end at the same time!")
+							.setCancelable(false)
+							.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,int id) {
+								}
+							});
+							AlertDialog alertDialog = alertDialogBuilder.create();
+							alertDialog.show();
+
+						}});
+					Log.d("ARCHIVES", "Fromdate (" + fromDate.toString() + ") is over two weeks ago");
+				} else if ((toDate.getTime().getTime() - fromDate.getTime().getTime()) > 1000 * 60 * 60 * 4) {
+					Log.d("ARCHIVES", "Fromdate (" + fromDate.toString() + ") to (" + toDate.toString() + ") is more than four hours");
+					runOnUiThread(new Runnable(){
+						@Override
+						public void run() {
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+									MainActivity.this);
+							alertDialogBuilder.setTitle("Sorry");
+							alertDialogBuilder
+							.setMessage("Sorry, only four hours of archives can be queued at a time.")
+							.setCancelable(false)
+							.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,int id) {
+								}
+							});
+							AlertDialog alertDialog = alertDialogBuilder.create();
+							alertDialog.show();
+
+						}});
+				} else {
+					//Play dat shit
+					Log.d("ARCHIVES", "Playing from (" + fromDate.toString() + ") to (" + toDate.toString() + ")");
+					MainActivity.this.isLive = false;
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					MainActivity.this.archiveStart = sdf.format(fromDate.getTime());
+					MainActivity.this.archiveEnd = sdf.format(toDate.getTime());
+					final String archiveURL = "http://wmfo-duke.orgs.tufts.edu/cgi-bin/castbotv2?" + 
+							"s-year=" + fromDate.get(Calendar.YEAR) + 
+							"&s-month=" + (fromDate.get(Calendar.MONTH) + 1) + 
+							"&s-day=" + fromDate.get(Calendar.DAY_OF_MONTH) +
+							"&s-hour=" + fromDate.get(Calendar.HOUR_OF_DAY) +
+							"&e-year=" + toDate.get(Calendar.YEAR) +
+							"&e-month=" + (toDate.get(Calendar.MONTH) + 1) +
+							"&e-day=" + toDate.get(Calendar.DAY_OF_MONTH) +
+							"&e-hour=" + toDate.get(Calendar.HOUR_OF_DAY) +
+							"/archive.mp3";
+					Log.d("ARCHIVES", "URL: " + archiveURL);
+
+					runOnUiThread(new Runnable(){
+						@Override
+						public void run() {
+							if (AudioService.isRunning != null && AudioService.isRunning){
+								stopService(new Intent(MainActivity.this, AudioService.class));
+								playButton.setImageDrawable(getResources().getDrawable(R.drawable.play));
+							} 
+							Intent startIntent = new Intent(MainActivity.this, AudioService.class);
+							startIntent.putExtra("source", archiveURL);
+							startService(startIntent);
+							playButton.setImageDrawable(getResources().getDrawable(R.drawable.stop));
+
+							TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
+							Track.setText("Playing archives");
+
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+							TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
+							Artist.setText(sdf.format(fromDate.getTime()));
+
+							TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
+							Album.setText(" to ");
+
+							TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
+							DJ.setText(sdf.format(toDate.getTime()));
+
+							TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
+						}});
+				}
+			}
+		});
+
+	}
+
+	private void setupArchivePlayerViewV8(){
+		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
+
 		final Spinner fromDay = (Spinner) findViewById(R.id.spinner_fromDay);
 		final Spinner fromMonth = (Spinner) findViewById(R.id.spinner_fromMonth);
 		final Spinner fromYear = (Spinner) findViewById(R.id.spinner_fromYear);
@@ -357,11 +551,11 @@ public class MainActivity extends TabActivity {
 						}});
 				} else {
 					//Play dat shit
-					Log.d("ARCHIVES", "Playinf from (" + fromDate.toString() + ") to (" + toDate.toString() + ")");
-					if (updateCurrentTimer != null){
-						updateCurrentTimer.cancel();
-						updateCurrentTimer = null;
-					}
+					MainActivity.this.isLive = false;
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					MainActivity.this.archiveStart = sdf.format(fromDate.getTime());
+					MainActivity.this.archiveEnd = sdf.format(toDate.getTime());
+					Log.d("ARCHIVES", "Playing from (" + fromDate.toString() + ") to (" + toDate.toString() + ")");
 					final String archiveURL = "http://wmfo-duke.orgs.tufts.edu/cgi-bin/castbotv2?" + 
 							"s-year=" + fromDate.get(Calendar.YEAR) + 
 							"&s-month=" + (fromDate.get(Calendar.MONTH) + 1) + 
@@ -401,7 +595,6 @@ public class MainActivity extends TabActivity {
 							DJ.setText(sdf.format(toDate.getTime()));
 
 							TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-							Show.setText("");
 
 						}});
 				}
@@ -410,6 +603,9 @@ public class MainActivity extends TabActivity {
 	}
 
 	private void noSaveStateSetup(){
+
+		this.isLive = true;
+
 		/*
 		 * Fetch twitter data
 		 */
@@ -438,6 +634,11 @@ public class MainActivity extends TabActivity {
 	}
 
 	private void saveStateSetup(Bundle savedInstanceState){
+		
+		if (savedInstanceState != null && savedInstanceState.containsKey("isLive")){
+			this.isLive = savedInstanceState.getBoolean("isLive");
+		}
+		
 		/*
 		 * Restore now playing text
 		 */
@@ -466,15 +667,16 @@ public class MainActivity extends TabActivity {
 		/*
 		 * Restore tweet data
 		 */
-		Log.d("TWEETS", "Loading from saved state");
-		ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
-		try {
-			twitterJSON =new JSONArray(savedInstanceState.getString("tweets")); 
-			twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
-		} catch (JSONException e) {
-			e.printStackTrace();
+		if (savedInstanceState.containsKey("tweets")){
+			Log.d("TWEETS", "Loading from saved state");
+			ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
+			try {
+				twitterJSON =new JSONArray(savedInstanceState.getString("tweets")); 
+				twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
-
 	}
 
 	ArrayList<TwitterStatus> parseTwitterJSON(JSONArray twitterJSON){
@@ -512,41 +714,50 @@ public class MainActivity extends TabActivity {
 	}
 
 	void setNowPlaying(){
+
 		String SpinInfo = null;
 		String playlistXML = null;
 		try {
 			//SpinInfo = executeGET("http://wmfo-duke.orgs.tufts.edu:8000/7.html");
 			SpinInfo = executeGET("http://spinitron.com/public/newestsong.php?station=wmfo");
-
 			playlistXML = executeGET("http://spinitron.com/radio/rss.php?station=wmfo");
 		} catch (ClientProtocolException e) {
 		} catch (IOException e) {
 		} catch (URISyntaxException e) {
 		}
-
-		if (SpinInfo != null && SpinInfo != ""){
-			final SongInfo nowPlaying = new SongInfo(SpinInfo, true);
+		if (playlistXML != null && !playlistXML.equals("")){
 			final Playlist playlist = new Playlist(playlistXML);
 			runOnUiThread(new Runnable(){
 				@Override
 				public void run() {
 					ListView playLististView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
 					playLististView.setAdapter(new PlayListViewAdapter(MainActivity.this, playlist));
-
+				}});
+		}
+		if (SpinInfo != null && SpinInfo != ""){
+			final SongInfo nowPlaying = new SongInfo(SpinInfo, true);
+			runOnUiThread(new Runnable(){
+				@Override
+				public void run() {
 					TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
-					Track.setText(nowPlaying.title);
-
 					TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
-					Artist.setText("By " + nowPlaying.artist);
-
 					TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
-					Album.setText("From " + nowPlaying.album);
-
 					TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
-					DJ.setText("Spun by " + nowPlaying.DJ);
-
 					TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-					Show.setText("On the show " + nowPlaying.showName);
+
+					if (isLive){
+						Track.setText(nowPlaying.title);
+						Artist.setText("By " + nowPlaying.artist);
+						Album.setText("From " + nowPlaying.album);
+						DJ.setText("Spun by " + nowPlaying.DJ);
+						Show.setText("On the show " + nowPlaying.showName);
+					} else {
+						Track.setText("Playing archives");
+						Artist.setText(archiveStart);
+						Album.setText(" to ");
+						DJ.setText(archiveEnd);
+						Show.setText("");
+					}
 				}});
 		}
 	}
