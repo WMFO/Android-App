@@ -1,8 +1,12 @@
 package com.tufts.wmfo;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +29,7 @@ public class TweetListViewAdapter extends ArrayAdapter<TwitterStatus>{
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		View rowView = inflater.inflate(R.layout.tweet_listview_layout, parent, false);
+		final View rowView = inflater.inflate(R.layout.tweet_listview_layout, parent, false);
 		TextView nameText = (TextView) rowView.findViewById(R.id.largetext);
 		nameText.setText(values.get(position).tweetText + " - " + values.get(position).tweetDate);
 

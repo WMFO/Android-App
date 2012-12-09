@@ -82,7 +82,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		registerReceiver(networkBroadCastReciever, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
 		connectedOK = true;
 		switching = false;
-		currentConnection = connManager.getActiveNetworkInfo().getTypeName();
+		if (connManager != null){
+			currentConnection = connManager.getActiveNetworkInfo().getTypeName();
+		}
 		Log.d("WMFO:SERVICE", "Connected to " + currentConnection);
 		this.lastSawInternet = System.currentTimeMillis();
 	}

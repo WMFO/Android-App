@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,9 +42,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -107,6 +112,21 @@ public class MainActivity extends TabActivity {
 	}
 
 	@Override
+	public void onResume(){
+		super.onResume();
+		//Make sure the volume bar is accurate
+		runOnUiThread(new Runnable(){
+			@Override
+			public void run() {
+				SeekBar volumeBar = (SeekBar) findViewById(R.id.mainscreen_volume_control);
+				AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+				if (volumeBar != null && audioManager != null ){
+					volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+				}
+			}});
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -127,7 +147,24 @@ public class MainActivity extends TabActivity {
 	}
 
 
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub 
+		if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP ){ 
+			runOnUiThread(new Runnable(){
+				@Override
+				public void run() {
+					SeekBar volumeBar = (SeekBar) findViewById(R.id.mainscreen_volume_control);
+					AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+					if (volumeBar != null && audioManager != null ){
+						volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+					}
+				}});
+		} 
+		return super.onKeyDown(keyCode, event);
+	}
+
 	private void saveStateIndependentSetup(){
+
 
 		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
 		final ImageView phoneButton = (ImageView) findViewById(R.id.mainscreen_Button_phone);
@@ -602,6 +639,7 @@ public class MainActivity extends TabActivity {
 		});
 	}
 
+
 	private void noSaveStateSetup(){
 
 		this.isLive = true;
@@ -629,16 +667,40 @@ public class MainActivity extends TabActivity {
 					public void run() {
 						ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
 						twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
+						twitterList.setOnItemClickListener(new OnItemClickListener(){
+							@Override
+							public void onItemClick(AdapterView<?> arg0, View arg1,
+									int arg2, long arg3) {
+								TextView nameText = (TextView) arg1.findViewById(R.id.largetext);
+								Log.d("TWEET:CLICKED", "Text: " + nameText.getText().toString());
+								Pattern patt = Pattern.compile( "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" + 
+										"(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" + 
+										"|mil|biz|info|mobi|name|aero|jobs|museum" + 
+										"|travel|[a-z]{2}))(:[\\d]{1,5})?" + 
+										"(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" + 
+										"((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+										"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" + 
+										"(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+										"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" + 
+										"(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
+								Matcher matcher = patt.matcher(nameText.getText().toString());
+								if (matcher.matches()){
+									Log.d("TWEET:CLICKED", "Text looks like a URL, launching");
+									Intent i = new Intent(Intent.ACTION_VIEW);
+									i.setData(Uri.parse(matcher.group()));
+									startActivity(i);
+								}
+							}});
 					}});
 			}}).start();
 	}
 
 	private void saveStateSetup(Bundle savedInstanceState){
-		
+
 		if (savedInstanceState != null && savedInstanceState.containsKey("isLive")){
 			this.isLive = savedInstanceState.getBoolean("isLive");
 		}
-		
+
 		/*
 		 * Restore now playing text
 		 */
@@ -673,6 +735,20 @@ public class MainActivity extends TabActivity {
 			try {
 				twitterJSON =new JSONArray(savedInstanceState.getString("tweets")); 
 				twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
+				twitterList.setOnItemClickListener(new OnItemClickListener(){
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						String regex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+						TextView nameText = (TextView) arg1.findViewById(R.id.largetext);
+						Pattern patt = Pattern.compile(regex);
+						Matcher matcher = patt.matcher(nameText.getText().toString());
+						if (matcher.matches()){
+							Intent i = new Intent(Intent.ACTION_VIEW);
+							i.setData(Uri.parse(matcher.group()));
+							startActivity(i);
+						}
+					}});
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -732,7 +808,8 @@ public class MainActivity extends TabActivity {
 				public void run() {
 					ListView playLististView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
 					playLististView.setAdapter(new PlayListViewAdapter(MainActivity.this, playlist));
-				}});
+				}
+			});
 		}
 		if (SpinInfo != null && SpinInfo != ""){
 			final SongInfo nowPlaying = new SongInfo(SpinInfo, true);
