@@ -784,6 +784,9 @@ public class MainActivity extends TabActivity {
 		case R.id.menu_settings:
 			startActivity(new Intent(this, SettingsActivity.class));
 			return true;
+		case R.id.menu_about:
+			startActivity(new Intent(this, AboutActivity.class));
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
