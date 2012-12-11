@@ -24,9 +24,11 @@ public class Playlist {
 		Songs = new ArrayList<SongInfo>();
 		if (RSS != null && !RSS.equals("")){
 			Document playlistXML = getDomElement(RSS);
-			NodeList entries = playlistXML.getElementsByTagName("item");
-			for (int i=0; i < entries.getLength(); i++){
-				Songs.add(new SongInfo(entries.item(i)));
+			if (playlistXML != null){
+				NodeList entries = playlistXML.getElementsByTagName("item");
+				for (int i=0; i < entries.getLength(); i++){
+					Songs.add(new SongInfo(entries.item(i)));
+				}
 			}
 		}
 	}

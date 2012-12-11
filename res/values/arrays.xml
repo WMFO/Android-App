@@ -12,6 +12,13 @@
         <item>64</item>
     </string-array>
     
+    <string-array name="durationHoursArray">
+        <item>1 Hour</item>
+        <item>2 Hours</item>
+        <item>3 Hours</item>
+        <item>4 Hours</item>
+    </string-array>
+    
     <string-array name="hoursArray">
         <item>00:00</item>
         <item>01:00</item>

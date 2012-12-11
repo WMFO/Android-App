@@ -306,7 +306,7 @@ public class MainActivity extends TabActivity {
 	private void setupArchivePlayerView(){
 		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
 		final Spinner playFromHour = (Spinner) findViewById(R.id.spinner_playFromHour);
-		final Spinner playToHour = (Spinner) findViewById(R.id.spinner_playToHour);
+		final Spinner playDuration = (Spinner) findViewById(R.id.spinner_playDuration);
 
 		Button playArchiveButton = (Button) findViewById(R.id.archive_playButton);
 
@@ -326,7 +326,8 @@ public class MainActivity extends TabActivity {
 			public void onClick(View v) {
 				fromDate.set(GregorianCalendar.HOUR_OF_DAY, playFromHour.getSelectedItemPosition());
 				fromDate.set(GregorianCalendar.MINUTE, 0);
-				toDate.set(GregorianCalendar.HOUR_OF_DAY, playToHour.getSelectedItemPosition());
+				toDate.set(GregorianCalendar.HOUR_OF_DAY, playFromHour.getSelectedItemPosition());
+				toDate.add(GregorianCalendar.HOUR_OF_DAY, playDuration.getSelectedItemPosition() + 1);
 				toDate.set(GregorianCalendar.MINUTE, 0);
 
 				GregorianCalendar today = new GregorianCalendar();
@@ -340,7 +341,7 @@ public class MainActivity extends TabActivity {
 
 							alertDialogBuilder.setTitle("Oops");
 							alertDialogBuilder
-							.setMessage("Start time can't be before the end time!")
+							.setMessage("End time can't be before the start time!")
 							.setCancelable(false)
 							.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,int id) {

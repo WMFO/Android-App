@@ -33,31 +33,34 @@ public class SettingsActivity extends PreferenceActivity {
 		}
 
 		if (appPreferences.getString("qualityLevel", null) == null){
-			appPreferencesEditor.putString("qualityLevel", "256");
+			appPreferences.edit()
+			.putString("qualityLevel", "256")
+			.commit();
 		}
 		if (appPreferences.getString("qualityFallbackLevel", null) == null){
-			appPreferencesEditor.putString("qualityFallbackLevel", "256");
+			appPreferences.edit()
+			.putString("qualityFallbackLevel", "128")
+			.commit();
 		}
 
 		qualityPreference.setSummary(appPreferences.getString("qualityLevel", null) + "kbps");
 		qualityFallbackLevel.setSummary(appPreferences.getString("qualityFallbackLevel", null) + "kbps");
-		
+
 		qualityPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
 			@Override
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
 				qualityPreference.setSummary((String) newValue + "kbps");
-				return false;
+				return true;
 			}});
-
 		qualityFallbackLevel.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
 			@Override
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
 				qualityFallbackLevel.setSummary((String) newValue + "kbps");
-				return false;
+				return true;
 			}});
-		
+
 		dropQualityPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				if ((Boolean) newValue == true){

@@ -9,12 +9,13 @@ package com.tufts.wmfo;
 
 public final class R {
     public static final class array {
-        public static final int daysArray=0x7f050003;
-        public static final int hoursArray=0x7f050002;
-        public static final int monthsArray=0x7f050004;
+        public static final int daysArray=0x7f050004;
+        public static final int durationHoursArray=0x7f050002;
+        public static final int hoursArray=0x7f050003;
+        public static final int monthsArray=0x7f050005;
         public static final int streamQualityLevelValues=0x7f050001;
         public static final int streamQualityLevels=0x7f050000;
-        public static final int yearsArray=0x7f050005;
+        public static final int yearsArray=0x7f050006;
     }
     public static final class attr {
     }
@@ -82,8 +83,8 @@ public final class R {
         public static final int spinner_fromHour=0x7f07001d;
         public static final int spinner_fromMonth=0x7f07001b;
         public static final int spinner_fromYear=0x7f07001c;
+        public static final int spinner_playDuration=0x7f070014;
         public static final int spinner_playFromHour=0x7f070013;
-        public static final int spinner_playToHour=0x7f070014;
         public static final int spinner_toDay=0x7f07001f;
         public static final int spinner_toHour=0x7f07001e;
         public static final int spinner_toMonth=0x7f070020;
