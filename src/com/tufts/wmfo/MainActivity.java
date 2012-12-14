@@ -518,7 +518,7 @@ public class MainActivity extends TabActivity {
 
 							alertDialogBuilder.setTitle("Oops");
 							alertDialogBuilder
-							.setMessage("Start time can't be before the end time!")
+							.setMessage("End time can't be before the start time!")
 							.setCancelable(false)
 							.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,int id) {
