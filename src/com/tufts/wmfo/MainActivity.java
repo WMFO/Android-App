@@ -144,6 +144,8 @@ public class MainActivity extends TabActivity {
 			saveStateSetup(savedInstanceState);
 		}
 
+		postSaveStateDependentSetup();
+		
 	}
 
 
@@ -299,9 +301,51 @@ public class MainActivity extends TabActivity {
 			Log.d("API", "Api version " + Build.VERSION.SDK_INT + ", loading spinners");
 			setupArchivePlayerViewV8();
 		}
-
+		
 	}
 
+	private void postSaveStateDependentSetup(){
+		/*
+		 * Twitter link parsing
+		 * 
+		 */
+		ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
+		twitterList.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				TextView nameText = (TextView) arg1.findViewById(R.id.largetext);
+				Log.d("TWEET:CLICKED", "Text: " + nameText.getText().toString());
+				final List<String> URLs = extractUrls(nameText.getText().toString());
+				if (URLs.size() > 0){
+					Log.d("TWEET:CLICKED", "Found URL " + URLs.get(0));
+					
+					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+							MainActivity.this);
+
+					alertDialogBuilder.setTitle("Open Link?");
+					alertDialogBuilder
+					.setMessage("Would you like to open this?\n" + URLs.get(0))
+					.setCancelable(false)
+					.setNegativeButton("No",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+						}
+					})
+					.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							Intent i = new Intent(Intent.ACTION_VIEW);
+							i.setData(Uri.parse(URLs.get(0)));
+							startActivity(i);
+						}
+					});
+					
+					AlertDialog alertDialog = alertDialogBuilder.create();
+					alertDialog.show();
+					
+				}
+			}});
+	}
+	
 	@TargetApi(11)
 	private void setupArchivePlayerView(){
 		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
@@ -652,7 +696,7 @@ public class MainActivity extends TabActivity {
 			@Override
 			public void run() {
 				try {
-					String twitterJSONString = executeGET("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=10");
+					String twitterJSONString = executeGET("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=30");
 					twitterJSON = new JSONArray(twitterJSONString);
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
@@ -668,34 +712,34 @@ public class MainActivity extends TabActivity {
 					public void run() {
 						ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
 						twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
-						twitterList.setOnItemClickListener(new OnItemClickListener(){
-							@Override
-							public void onItemClick(AdapterView<?> arg0, View arg1,
-									int arg2, long arg3) {
-								TextView nameText = (TextView) arg1.findViewById(R.id.largetext);
-								Log.d("TWEET:CLICKED", "Text: " + nameText.getText().toString());
-								Pattern patt = Pattern.compile( "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" + 
-										"(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" + 
-										"|mil|biz|info|mobi|name|aero|jobs|museum" + 
-										"|travel|[a-z]{2}))(:[\\d]{1,5})?" + 
-										"(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" + 
-										"((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
-										"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" + 
-										"(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
-										"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" + 
-										"(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
-								Matcher matcher = patt.matcher(nameText.getText().toString());
-								if (matcher.matches()){
-									Log.d("TWEET:CLICKED", "Text looks like a URL, launching");
-									Intent i = new Intent(Intent.ACTION_VIEW);
-									i.setData(Uri.parse(matcher.group()));
-									startActivity(i);
-								}
-							}});
+						
 					}});
 			}}).start();
 	}
 
+	public static List<String> extractUrls(String input) {
+        List<String> result = new ArrayList<String>();
+
+        Pattern pattern = Pattern.compile(
+            "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" + 
+            "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" + 
+            "|mil|biz|info|mobi|name|aero|jobs|museum" + 
+            "|travel|[a-z]{2}))(:[\\d]{1,5})?" + 
+            "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" + 
+            "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" + 
+            "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" + 
+            "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
+
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            result.add(matcher.group());
+        }
+
+        return result;
+    }
+	
 	private void saveStateSetup(Bundle savedInstanceState){
 
 		if (savedInstanceState != null && savedInstanceState.containsKey("isLive")){
@@ -810,9 +854,14 @@ public class MainActivity extends TabActivity {
 			runOnUiThread(new Runnable(){
 				@Override
 				public void run() {
-					ListView playLististView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
-					playLististView.setAdapter(new PlayListViewAdapter(MainActivity.this, playlist));
-				}
+					ListView playListView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
+					int playListIndex = 0;
+					if (playListView.getAdapter() != null){
+						playListIndex = playListView.getFirstVisiblePosition();
+					}
+					playListView.setAdapter(new PlayListViewAdapter(MainActivity.this, playlist));
+					playListView.setSelectionFromTop(playListIndex, 0);
+					}
 			});
 		}
 		if (SpinInfo != null && SpinInfo != ""){
