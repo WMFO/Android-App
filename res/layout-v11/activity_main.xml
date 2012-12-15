@@ -15,7 +15,7 @@
         android:layout_height="match_parent" >
 
         <LinearLayout
-            android:id="@+id/linearLayout1"
+            android:id="@+id/nowPlayinglayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -81,7 +81,7 @@
             android:id="@android:id/tabhost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/linearLayout1"
+            android:layout_above="@+id/nowPlayinglayout"
             android:layout_below="@+id/mainscreen_controlLayout" >
 
             <LinearLayout
@@ -103,7 +103,7 @@
                     <ListView
                         android:id="@+id/mainscreen_playlistLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:cacheColorHint="#00000000"
                         android:minHeight="200dp" >
                     </ListView>
