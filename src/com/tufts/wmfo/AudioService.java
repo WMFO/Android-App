@@ -16,8 +16,12 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -25,6 +29,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
@@ -37,7 +43,9 @@ import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener, OnPreparedListener{
 
@@ -54,20 +62,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	String currentConnection;
 	String mediaSourceURL;
 	public static Boolean isLive;
+	NotificationManager ourNotificationManager;
 
 	ConnectivityManager connManager;
-
-	private static final String DEFAULT_USER_AGENT =
-			"Mozilla/5.0 (compatible; StreamScraper/1.0; +http://code.google.com/p/streamscraper/)";
-	private static final HttpParams DEFAULT_PARAMS;
-
-	static {
-		DEFAULT_PARAMS = new BasicHttpParams();
-		HttpProtocolParams.setVersion(DEFAULT_PARAMS, HttpVersion.HTTP_1_0);
-		HttpProtocolParams.setUserAgent(DEFAULT_PARAMS, DEFAULT_USER_AGENT);
-		HttpConnectionParams.setConnectionTimeout(DEFAULT_PARAMS, 10000);
-		HttpConnectionParams.setSoTimeout(DEFAULT_PARAMS, 10000);
-	}
 
 	final static String TAG = "WMFO:SERVICE";
 
@@ -76,6 +73,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		Log.d(TAG, "onCreate");
 		isRunning = true;
 		isLive = false;
+		ourNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		appPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 		updateCurrentTimer = new Timer();
@@ -97,6 +95,11 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		mediaPlayer.stop();
 		mediaPlayer.release();
 		mediaPlayer = null;
+
+		if (ourNotificationManager != null){
+			ourNotificationManager.cancel(R.id.WMFO_NOTIFICATION_ID);
+		}
+
 		unregisterReceiver(networkBroadCastReciever);
 		if (wifiLock.isHeld()){
 			wifiLock.release();
@@ -106,6 +109,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	@Override
 	public void onStart(Intent intent, int startid) {
 		Log.d(TAG, "onStart");
+		if (intent == null){
+			Log.e("AudioService", "Intent passed to audio service was null!");
+			this.stopSelf();
+		}
 		Bundle extras = intent.getExtras();
 		if (extras.containsKey("source")){
 			if (extras.getString("source").equals(getString(R.string.WMFO_STREAM_URL_HQ))){
@@ -163,35 +170,39 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	}
 
 	public void setNotification(SongInfo... nowPlaying){
-		Notification notification = new Notification();
-		//		notification.contentView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.notification_layout);
-		//		if (nowPlaying.length > 0) {
-		//			notification.contentView.setTextViewText(R.id.notificationLayout_artist, nowPlaying[0].artist);
-		//			notification.contentView.setTextViewText(R.id.notificationLayout_details, nowPlaying[0].title);
-		//		} else {
-		//			// assign the song name to songName
-		//			notification.contentView.setTextViewText(R.id.notificationLayout_artist, "WMFO");
-		//			notification.contentView.setTextViewText(R.id.notificationLayout_details, "Currently streaming");
-		//		}
-		//		//Handle the stop button
-		//		Intent stopService = new Intent(getApplicationContext(), MainActivity.class); 
-		//		stopService.putExtra("ACTION", "STOP");
-		//		notification.contentView.setOnClickPendingIntent(R.id.notificationLayout_stopButton, 
-		//				PendingIntent.getActivity(getApplicationContext(), 0, stopService, 0));
 
-		notification.icon = R.drawable.white_icon;
-		notification.flags |= Notification.FLAG_ONGOING_EVENT;
+		NotificationCompat.Builder notificationBuilder =
+				new NotificationCompat.Builder(this)
+		.setSmallIcon(R.drawable.ic_notification)
+		.setOngoing(true);
 
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, MainActivity.class), 0);
-		if (mediaPlayer != null && mediaPlayer.isPlaying()){
-			notification.tickerText = "Now Listening To WMFO";
-			notification.setLatestEventInfo(this, ((nowPlaying.length > 0) ? nowPlaying[0].artist : "WMFO") , ((nowPlaying.length > 0) ? nowPlaying[0].title : "Currently streaming"), contentIntent);
+		if (nowPlaying.length > 0 && (nowPlaying[0].artwork_large != null || nowPlaying[0].artwork_medium != null)){
+			Log.d("WMFO", "Song has art - adding");
+			if (nowPlaying[0].artwork_large!= null) {
+				notificationBuilder.setLargeIcon(nowPlaying[0].artwork_large);
+			} else {
+				notificationBuilder.setLargeIcon(nowPlaying[0].artwork_medium);
+			}
 		} else {
-			notification.tickerText = "Loading WMFO Stream...";
-			notification.setLatestEventInfo(this, "WMFO" , "Buffering...", contentIntent);
+			notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.white_icon));
 		}
-		startForeground(R.id.WMFO_NOTIFICATION_ID, notification);
+		
+		if (mediaPlayer != null && mediaPlayer.isPlaying()){
+			notificationBuilder.setContentTitle((nowPlaying.length > 0) ? nowPlaying[0].artist : "Now Listening To WMFO");
+			notificationBuilder.setContentText((nowPlaying.length > 0) ? nowPlaying[0].title : "Currently streaming");
+		} else {
+			notificationBuilder.setTicker("Loading WMFO Stream...");
+			notificationBuilder.setContentTitle("Loading WMFO Stream...");
+			notificationBuilder.setContentText("Buffering...");
+		}
+
+		notificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0,
+				new Intent(this, MainActivity.class), 0));
+
+		if (ourNotificationManager != null){
+			ourNotificationManager.notify(R.id.WMFO_NOTIFICATION_ID, notificationBuilder.build());
+		}
+
 	}
 
 	public void showStreamError(){
@@ -296,7 +307,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				String SpinInfo = null;
 				try {
 					//SpinInfo = executeGET("http://wmfo-duke.orgs.tufts.edu:8000/7.html");
-					SpinInfo = executeGET("http://spinitron.com/public/newestsong.php?station=wmfo");
+					SpinInfo = Network.getURL("http://spinitron.com/public/newestsong.php?station=wmfo");
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -307,46 +318,54 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				if (SpinInfo != null && SpinInfo != ""){
 					AudioService.this.connectedOK=true;
 					SongInfo nowPlaying = new SongInfo(SpinInfo, true);
+
+					if (CurrentSong == null || !CurrentSong.equals(nowPlaying)){
+						SongInfo oldSong = CurrentSong;
+						CurrentSong = nowPlaying;
+
+						if (oldSong != null){
+							Log.d("WMFO:SERVICE", "Old song (" + oldSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
+							if (appPreferences.getBoolean("lastFMScrobble", false)){
+								if (isLive) { 
+									new ScrobbleRequest(AudioService.this, oldSong).send(); 
+								}
+							}
+						}
+
+						/*
+						 * Try and fetch album art from last.fm
+						 */
+						if (isLive) {
+							Log.d("WMFO:ART", "Detected track change, trying to get art");
+							JSONObject albumInfo = LastFM.getAlbumInfo(AudioService.this, nowPlaying.artist, nowPlaying.album);
+							if (albumInfo.has("album")){
+								try {
+									albumInfo = albumInfo.getJSONObject("album");
+									if (albumInfo.has("image")){
+										JSONArray images = albumInfo.getJSONArray("image");
+										nowPlaying.parseLastFMAlbumArt(images);
+									}
+								} catch (JSONException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+
 					if (isLive) { 
-						setNotification(nowPlaying);
+						setNotification(CurrentSong);
 					} else {
 						nowPlaying.title = "Playing archives";
 						nowPlaying.artist = "WMFO";
 						setNotification(nowPlaying);
 					}
 
-					if (CurrentSong != null && !CurrentSong.equals(nowPlaying)){
-						SongInfo oldSong = CurrentSong;
-						Log.d("WMFO:SERVICE", "Old song (" + oldSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
-						CurrentSong = nowPlaying;
-						if (appPreferences.getBoolean("lastFMScrobble", false)){
-							if (isLive) { 
-								new ScrobbleRequest(AudioService.this, oldSong).send(); 
-							}
-						}
-					} else {
-						CurrentSong = nowPlaying;
-					}
 					if (isLive) { new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send(); }
 
 				} else {
 					AudioService.this.connectedOK=false;
 				}
 			}}).start();
-	}
-
-	public String executeGET(String getURL) throws ClientProtocolException, IOException, URISyntaxException{
-
-		DefaultHttpClient client = new DefaultHttpClient(DEFAULT_PARAMS);
-		HttpGet req = new HttpGet(getURL);
-
-		HttpResponse res;
-		res = client.execute(req);
-		if (res.getStatusLine().getStatusCode() != 200) {
-			Log.e(TAG, "Status code != 200!");
-		}
-		HttpEntity entity = res.getEntity();
-		return EntityUtils.toString(entity);
 	}
 
 	@Override

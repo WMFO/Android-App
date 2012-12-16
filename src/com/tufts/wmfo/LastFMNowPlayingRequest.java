@@ -26,7 +26,7 @@ public class LastFMNowPlayingRequest {
 
 	public void send(){
 		if (appPreferences.getString("setting_LastFM_Session_Key", null) == null){
-			Log.w("WMFO:LASTFM", "Tried to send now playin notification wihtout auth");
+			Log.w("WMFO:LASTFM", "Tried to send now playing notification wihtout auth");
 			return;
 		}
 		
@@ -43,15 +43,11 @@ public class LastFMNowPlayingRequest {
 		
 		String result = null;
 		try {
-			result = LastFM.postData(this.appContext.getResources().getString(R.string.LAST_FM_API_URL_SECURE), nameValuePairs);
+			result = Network.postData(this.appContext.getResources().getString(R.string.LAST_FM_API_URL_SECURE), nameValuePairs);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		
-		if (result != null){
-			Log.d("NOWPLAYING", result);
 		}
 		
 	}

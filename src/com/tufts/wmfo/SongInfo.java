@@ -1,27 +1,36 @@
 package com.tufts.wmfo;
 
+import java.io.IOException;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 public class SongInfo {
 
-	String title;
-	String album;
-	String artist;
-	String spundate;
-	String label;
-	String DJ;
-	String showName;
-
+	String title = null;
+	String album = null;
+	String artist = null;
+	String spundate = null;
+	String label = null;
+	String DJ = null;
+	String showName = null;
+	String rawDetails = null;
+	
 	int numListeners;
 	int streamStatus;
 	int peakListeners;
 	int maxListeners;
 	int uniqueListeners;
 	int bitrate;
-	String rawDetails;
+	
+	Bitmap artwork_medium = null;
+	Bitmap artwork_large = null;
 	
 	@Override
 	public boolean equals(Object other){
@@ -32,6 +41,7 @@ public class SongInfo {
 	}
 	
 	public SongInfo(String SpinapiInfo, boolean Spinitron){
+		
 		try {
 			this.title = stripTags(getSpan("songpart", SpinapiInfo));
 			this.title = replaceHTMLCodes(this.title);
@@ -90,6 +100,7 @@ public class SongInfo {
 	}
 
 	public SongInfo(String ICYInfo){
+		
 		//5,1,25,32,5,256,Cleveland, Ohio by Granicus, from Granicus
 		//1 - Number of listeners
 		//2 - Stream status (1 means you're on the air, 0 means the source isn't there)
@@ -159,6 +170,7 @@ public class SongInfo {
 	
 	
 	public SongInfo(Node item) {
+		
 		NodeList details = item.getChildNodes();
 		this.rawDetails = null;
 		for (int i=0; i < details.getLength(); i++){
@@ -176,6 +188,27 @@ public class SongInfo {
 //			lastIndex = rawDetails.indexOf(" from ", lastIndex);
 //			album = rawDetails.substring(rawDetails.indexOf("from ", lastIndex), rawDetails.indexOf("(", lastIndex));
 //		}
+	}
+
+	public void parseLastFMAlbumArt(JSONArray images) {
+		for (int i=0; i < images.length(); i++){
+			JSONObject image;
+			try {
+				image = (JSONObject) images.get(i);
+				Log.d("SONGINFO:ART", "Found " + image.getString("size") + " image");
+				if (image.getString("size").equals("medium")){
+					Log.d("SONGINFO:ART", "Attempting to fetch " + image.getString("#text"));
+					this.artwork_medium = Network.downloadBitmap(image.getString("#text"));
+				} else if (image.getString("size").equals("large")){
+					this.artwork_large = Network.downloadBitmap(image.getString("#text"));
+				}
+				
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+			}
+			
+		}
 	}
 
 }

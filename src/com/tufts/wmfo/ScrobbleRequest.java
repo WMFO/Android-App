@@ -45,7 +45,7 @@ public class ScrobbleRequest {
 		
 		String result = null;
 		try {
-			result = LastFM.postData(this.appContext.getResources().getString(R.string.LAST_FM_API_URL_SECURE), nameValuePairs);
+			result = Network.postData(this.appContext.getResources().getString(R.string.LAST_FM_API_URL_SECURE), nameValuePairs);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -26,22 +26,24 @@ public final class R {
     }
     public static final class drawable {
         public static final int bg=0x7f020000;
-        public static final int ic_action_search=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
-        public static final int lastfm_logo_red=0x7f020003;
-        public static final int phone=0x7f020004;
-        public static final int play=0x7f020005;
-        public static final int shadedback=0x7f020006;
-        public static final int shadedback_flipped=0x7f020007;
-        public static final int shadedback_solid=0x7f020008;
-        public static final int stop=0x7f020009;
-        public static final int tiled_bg=0x7f02000a;
-        public static final int volume_0=0x7f02000b;
-        public static final int volume_1=0x7f02000c;
-        public static final int volume_2=0x7f02000d;
-        public static final int white_icon=0x7f02000e;
-        public static final int wmfo_icon=0x7f02000f;
-        public static final int wmfo_icon_20=0x7f020010;
+        public static final int bg_dark=0x7f020001;
+        public static final int ic_action_search=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int ic_notification=0x7f020004;
+        public static final int lastfm_logo_red=0x7f020005;
+        public static final int phone=0x7f020006;
+        public static final int play=0x7f020007;
+        public static final int shadedback=0x7f020008;
+        public static final int shadedback_flipped=0x7f020009;
+        public static final int shadedback_solid=0x7f02000a;
+        public static final int stop=0x7f02000b;
+        public static final int tiled_bg=0x7f02000c;
+        public static final int volume_0=0x7f02000d;
+        public static final int volume_1=0x7f02000e;
+        public static final int volume_2=0x7f02000f;
+        public static final int white_icon=0x7f020010;
+        public static final int wmfo_icon=0x7f020011;
+        public static final int wmfo_icon_20=0x7f020012;
     }
     public static final class id {
         public static final int WMFO_NOTIFICATION_ID=0x7f070000;
@@ -52,8 +54,8 @@ public final class R {
         public static final int archive_playButton=0x7f070015;
         public static final int frameLayout1=0x7f070023;
         public static final int imageView1=0x7f070001;
-        public static final int label=0x7f07002e;
-        public static final int largetext=0x7f07002d;
+        public static final int label=0x7f07002f;
+        public static final int largetext=0x7f07002e;
         public static final int lastFM_auth_errorMessage=0x7f070025;
         public static final int lastFM_auth_inputLayout=0x7f070024;
         public static final int lastFM_auth_loginButton=0x7f070028;
@@ -74,11 +76,12 @@ public final class R {
         public static final int mainscreen_twitterListLayout=0x7f070010;
         public static final int mainscreen_volume_control=0x7f070019;
         public static final int mainscreen_volume_icon=0x7f070018;
-        public static final int menu_about=0x7f070030;
-        public static final int menu_settings=0x7f07002f;
-        public static final int notificationLayout_artist=0x7f07002b;
-        public static final int notificationLayout_details=0x7f07002c;
-        public static final int notificationLayout_stopButton=0x7f07002a;
+        public static final int menu_about=0x7f070031;
+        public static final int menu_settings=0x7f070030;
+        public static final int notification_artistName=0x7f07002b;
+        public static final int notification_main_img=0x7f07002a;
+        public static final int notification_stopButton=0x7f07002d;
+        public static final int notification_trackName=0x7f07002c;
         public static final int nowPlayinglayout=0x7f070008;
         public static final int spinner_fromDay=0x7f07001b;
         public static final int spinner_fromHour=0x7f07001e;
@@ -121,6 +124,7 @@ public final class R {
     }
     public static final class style {
         public static final int AppTheme=0x7f090000;
+        public static final int WhiteSpinnerItem=0x7f090001;
     }
     public static final class xml {
         public static final int main_preferences=0x7f040000;

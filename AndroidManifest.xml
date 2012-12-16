@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tufts.wmfo"
-    android:versionCode="22"
+    android:versionCode="23"
     android:versionName="Beta" >
 
     <uses-sdk

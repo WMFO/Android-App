@@ -1,0 +1,8 @@
+#Binaries
+bin/
+
+#No idea what this is
+.lvm_history
+
+#Contains sensetive API keys
+src/com/tufts/wmfo/Auth.java

@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -27,6 +29,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -34,12 +37,50 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.res.Resources.NotFoundException;
+import android.util.Log;
 
 public class LastFM {
-	
-	
+
+
+	public static JSONObject getAlbumInfo(Context context, String artistName, String albumName){
+		/*
+		 * http://ws.audioscrobbler.com/2.0/
+		 * ?method=album.getinfo
+		 * &api_key=6e96448bf11affb604a0bdef2b811214
+		 * &artist=Cher
+		 * &album=Believe
+		 */
+		
+		String getURL = context.getResources().getString(R.string.LAST_FM_API_URL);
+		try {
+			getURL += "&method=album.getinfo"
+					+ "&api_key=" + Auth.LAST_FM_API_KEY
+					+ "&artist=" + URLEncoder.encode(artistName, "utf-8")
+					+ "&album=" + URLEncoder.encode(albumName, "utf-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		String albumInfoString = null;
+		Log.d("WMFO:PIC", getURL);
+		try {
+			albumInfoString = Network.getURL(getURL);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		if (albumInfoString != null){
+			try {
+				return new JSONObject(albumInfoString);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return new JSONObject();
+	}
+
 	/*
-	 * Example responses:
+	 * Example responses (for auth):
 	 * Error (bad username):
 	 * {"message":"Invalid username. No last.fm account associated with that name.","error":4,"links":[]}
 	 * Error (bad password):
@@ -48,12 +89,13 @@ public class LastFM {
 	 * {"session":{"subscriber":"0","key":"<key>","name":"RossSchlaikjer"}}
 	 * 
 	 */
+
 	public static JSONObject processAuth(Context context, String username, String password, String api_key, String api_secret){
 		List<NameValuePair> postValues = getMobileSession(username, password, api_key, api_secret);
 
 		String authInfo = null;
 		try {
-			authInfo = postData(context.getResources().getString(R.string.LAST_FM_API_URL_SECURE), postValues);
+			authInfo = Network.postData(context.getResources().getString(R.string.LAST_FM_API_URL_SECURE), postValues);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -69,69 +111,6 @@ public class LastFM {
 		}
 		return null;
 	}
-	
-	private static void copy(InputStream in, OutputStream out) throws IOException {
-		byte[] buf = new byte[512];
-		int bytesRead = 1;
-		while (bytesRead > 0) {
-			bytesRead = in.read(buf);
-			if (bytesRead > 0) {
-				out.write(buf, 0, bytesRead);
-			}
-		}
-	}
-	
-	public static String postData(String url, List<NameValuePair> postdata) throws IOException {
-		// Create a new HttpClient and Post Header
-		URL postURL = new URL(url);
-		HttpURLConnection conn = null;
-		if (postURL.getProtocol().toLowerCase().equals("https")) {
-			trustAllHosts();
-			HttpsURLConnection https = (HttpsURLConnection) postURL.openConnection();
-			https.setHostnameVerifier(DO_NOT_VERIFY);
-			conn = https;
-		} else {
-			conn = (HttpURLConnection) postURL.openConnection();
-		}
-		conn.setRequestMethod("POST");
-		conn.setDoOutput(true);
-		conn.setRequestProperty("connection", "close");
-		OutputStream ostr = null;
-		try {
-			ostr = conn.getOutputStream();
-			copy(new UrlEncodedFormEntity(postdata).getContent(), ostr);
-		} finally {
-			if (ostr != null)
-				ostr.close();
-		}
-
-		BufferedReader reader = null;
-		String response = "";
-		conn.connect();
-		try {
-			if(conn.getInputStream() != null)
-				reader = new BufferedReader(new InputStreamReader(conn.getInputStream()), 512);
-		} catch (IOException e) {
-			if(conn.getErrorStream() != null)
-				reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()), 512);
-		}
-
-		if(reader != null) {
-			response = toString(reader);
-			reader.close();
-		}
-
-		return response;
-	} 
-
-	private static String toString(BufferedReader reader) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		String line;
-		while ((line = reader.readLine()) != null) {
-			sb.append(line).append('\n');
-		}
-		return sb.toString();
-	}
 
 	public static List<NameValuePair> hashToNameValuePair(Map<String, String> params){
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -140,7 +119,7 @@ public class LastFM {
 		}
 		return nameValuePairs;
 	}
-	
+
 	private static List<NameValuePair> getMobileSession(String username, String password, String apiKey, String secret) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("api_key", apiKey);
@@ -157,12 +136,6 @@ public class LastFM {
 		nameValuePairs.add(new BasicNameValuePair("api_sig", sig));
 		return nameValuePairs;
 	}
-
-	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
-		public boolean verify(String hostname, SSLSession session) {
-			return true;
-		}
-	};
 
 	public static String createSignature(String method, Map<String, String> params, String secret) {
 		params = new TreeMap<String, String>(params);
@@ -196,30 +169,6 @@ public class LastFM {
 		return null;
 	}
 
-	private static void trustAllHosts() {
-		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return new java.security.cert.X509Certificate[] {};
-			}
-			public void checkClientTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
-			}
 
-			public void checkServerTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
-			}
-		} };
 
-		// Install the all-trusting trust manager
-		try {
-			SSLContext sc = SSLContext.getInstance("TLS");
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			HttpsURLConnection
-			.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 }

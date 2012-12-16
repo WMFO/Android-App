@@ -1,50 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:orientation="horizontal" >
+    android:layout_height="match_parent"
+     >
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/notification_main_img"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_centerVertical="true"
-        android:src="@drawable/wmfo_icon" />
-
-    <Button
-        android:id="@+id/notificationLayout_stopButton"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="||" />
+        android:src="@drawable/white_icon" />
 
     <TextView
-        android:id="@+id/notificationLayout_artist"
+        android:id="@+id/notification_artistName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/notificationLayout_details"
-        android:layout_toRightOf="@+id/imageView1"
-        android:ellipsize="end"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:text="Artist"
-        android:textStyle="bold" />
+        android:layout_toRightOf="@+id/notification_main_img"
+        android:layout_marginLeft="10dp"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/notificationLayout_details"
+        android:id="@+id/notification_trackName"
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/notificationLayout_artist"
-        android:layout_toLeftOf="@+id/notificationLayout_stopButton"
-        android:layout_toRightOf="@+id/imageView1"
-        android:ellipsize="marquee"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:text="Song - Album" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textView1"
+        android:layout_toRightOf="@+id/notification_main_img"
+        android:layout_marginLeft="10dp"
+        android:text="TextView" />
+
+    <ImageView
+        android:id="@+id/notification_stopButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/stop" />
 
 </RelativeLayout>

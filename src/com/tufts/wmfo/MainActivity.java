@@ -74,17 +74,6 @@ public class MainActivity extends TabActivity {
 	boolean isLive;
 	String archiveStart;
 	String archiveEnd;
-	private static final String DEFAULT_USER_AGENT =
-			"Mozilla/5.0 (compatible; StreamScraper/1.0; +http://code.google.com/p/streamscraper/)";
-	private static final HttpParams DEFAULT_PARAMS;
-
-	static {
-		DEFAULT_PARAMS = new BasicHttpParams();
-		HttpProtocolParams.setVersion(DEFAULT_PARAMS, HttpVersion.HTTP_1_0);
-		HttpProtocolParams.setUserAgent(DEFAULT_PARAMS, DEFAULT_USER_AGENT);
-		HttpConnectionParams.setConnectionTimeout(DEFAULT_PARAMS, 10000);
-		HttpConnectionParams.setSoTimeout(DEFAULT_PARAMS, 10000);
-	}
 
 	final static String TAG = "WMFO:SERVICE";
 
@@ -696,7 +685,7 @@ public class MainActivity extends TabActivity {
 			@Override
 			public void run() {
 				try {
-					String twitterJSONString = executeGET("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=30");
+					String twitterJSONString = Network.getURL("https://api.twitter.com/1/statuses/user_timeline.json?include_entities=true&include_rts=true&screen_name=wmfo&count=30");
 					twitterJSON = new JSONArray(twitterJSONString);
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
@@ -843,8 +832,8 @@ public class MainActivity extends TabActivity {
 		String playlistXML = null;
 		try {
 			//SpinInfo = executeGET("http://wmfo-duke.orgs.tufts.edu:8000/7.html");
-			SpinInfo = executeGET("http://spinitron.com/public/newestsong.php?station=wmfo");
-			playlistXML = executeGET("http://spinitron.com/radio/rss.php?station=wmfo");
+			SpinInfo = Network.getURL("http://spinitron.com/public/newestsong.php?station=wmfo");
+			playlistXML = Network.getURL("http://spinitron.com/radio/rss.php?station=wmfo");
 		} catch (ClientProtocolException e) {
 		} catch (IOException e) {
 		} catch (URISyntaxException e) {
@@ -891,29 +880,6 @@ public class MainActivity extends TabActivity {
 				}});
 		}
 	}
-
-	public String executeGET(String getURL) throws ClientProtocolException, IOException, URISyntaxException{
-
-		DefaultHttpClient client = new DefaultHttpClient(DEFAULT_PARAMS);
-		HttpGet req = new HttpGet(getURL);
-
-		HttpResponse res = null;
-		try {
-			res = client.execute(req);
-		} catch (org.apache.http.conn.ConnectTimeoutException e){
-			Log.w("GET", "Timeout fetching " + getURL);
-		}
-		if (res != null && res.getStatusLine().getStatusCode() != 200) {
-			Log.e(TAG, "Status code != 200!");
-		}
-		if (res != null){
-			HttpEntity entity = res.getEntity();
-			return EntityUtils.toString(entity);
-		} else {
-			return "";
-		}
-	}
-
 
 }
 

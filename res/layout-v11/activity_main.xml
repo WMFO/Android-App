@@ -3,12 +3,6 @@
     android:layout_height="wrap_content"
     android:background="@drawable/tiled_bg" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/wmfo_icon_20" />
-
     <RelativeLayout
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -141,9 +135,11 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="Play from "
+                                    android:color="#fff"
                                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                                 <Spinner
+                                    style="@style/WhiteSpinnerItem"
                                     android:id="@+id/spinner_playFromHour"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -156,15 +152,18 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text=" for "
+                                    android:color="#fff"
                                     android:textAppearance="?android:attr/textAppearanceMedium" />
                                 
                                 <Spinner
                                     android:id="@+id/spinner_playDuration"
+                                    style="@style/WhiteSpinnerItem"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:entries="@array/durationHoursArray"
                                     android:spinnerMode="dropdown" />
+
                             </LinearLayout>
 
                             <Button

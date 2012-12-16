@@ -91,7 +91,7 @@ public class SettingsActivity extends PreferenceActivity {
 					lastFMSetup.setSummary("Log in to Last.FM");
 					Log.d("WMFO:SETTINGS", "Removed Last.FM key");
 				}
-				return false;
+				return true;
 			}
 		});
 

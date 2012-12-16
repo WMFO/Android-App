@@ -23,7 +23,7 @@
         android:layout_toRightOf="@+id/imageView1"
         android:text="Build Name: "
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#FFF" />
+         />
 
     <TextView
         android:id="@+id/textView1"
@@ -33,7 +33,7 @@
         android:layout_below="@+id/textView2"
         android:text="Build Version: "
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#FFF" />
+         />
 
     <TextView
         android:id="@+id/textView3"
@@ -43,7 +43,7 @@
         android:layout_alignLeft="@+id/textView2"
         android:text="Build Date: "
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#FFF" />
+        />
 
    <TextView
         android:id="@+id/about_buildCode"
@@ -54,7 +54,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
         android:text=""
-        android:textColor="#FFF"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -65,7 +64,6 @@
         android:layout_alignBottom="@+id/textView2"
         android:layout_alignRight="@+id/about_buildCode"
         android:text=""
-        android:textColor="#FFF"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -76,7 +74,6 @@
         android:layout_alignBottom="@+id/textView3"
         android:layout_alignRight="@+id/about_buildCode"
         android:text=""
-        android:textColor="#FFF"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
