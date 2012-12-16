@@ -164,7 +164,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 			@Override
 			public void run() {
 				updateNowPlaying();
-				//updateCurrentTimer.schedule(this, 1000);
 			}}, 0, 5000);
 		Log.d(TAG, "onPrepared");
 	}
@@ -228,11 +227,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 			@Override
 			public boolean onError(MediaPlayer mp, int what, int extra) {
 				Log.e("WMFO:MEDIA", "Media player has crashed! Code " + what + " Extra: " + extra);
-				//mp.release();
-				/*if (extra == -110){
-					Log.d("WMFO:MEDIA", "Connection timed out");
-					initMediaPlayer();
-				}*/
 				updateCurrentTimer.cancel();
 				showStreamError();
 				AudioService.this.stopSelf();

@@ -119,11 +119,7 @@ public class MainActivity extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		//		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
 		setContentView(R.layout.activity_main);
-		//		} else {
-		//			setContentView(R.layout.activity_main_landscape);
-		//		}
 
 		saveStateIndependentSetup();
 
@@ -139,7 +135,6 @@ public class MainActivity extends TabActivity {
 
 
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub 
 		if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP ){ 
 			runOnUiThread(new Runnable(){
 				@Override
@@ -196,7 +191,6 @@ public class MainActivity extends TabActivity {
 				} else {
 					Intent startIntent = new Intent(MainActivity.this, AudioService.class);
 					startIntent.putExtra("source", getString(R.string.WMFO_STREAM_URL_HQ));
-					//http://wmfo-duke.orgs.tufts.edu/cgi-bin/castbotv2?s-year=2012&s-month=11&s-day=18&s-hour=02&e-year=2012&e-month=11&e-day=18&e-hour=03/archive.mp3
 					startService(startIntent);
 					playButton.setImageDrawable(getResources().getDrawable(R.drawable.stop));
 
@@ -206,7 +200,6 @@ public class MainActivity extends TabActivity {
 							@Override
 							public void run() {
 								setNowPlaying();
-								//updateCurrentTimer.schedule(this, 1000);
 							}}, 0, 10000);
 					}
 				}
@@ -226,7 +219,6 @@ public class MainActivity extends TabActivity {
 				@Override
 				public void run() {
 					setNowPlaying();
-					//updateCurrentTimer.schedule(this, 1000);
 				}}, 0, 10000);
 		}
 
@@ -237,7 +229,6 @@ public class MainActivity extends TabActivity {
 
 		final AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 		final ImageView volumeIcon = (ImageView) findViewById(R.id.mainscreen_volume_icon);
-		//audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
 		SeekBar volumeBar = (SeekBar) findViewById(R.id.mainscreen_volume_control);
 		volumeBar.setMax(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
 		volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
@@ -267,7 +258,7 @@ public class MainActivity extends TabActivity {
 		/*
 		 * Tab setup
 		 */
-		TabHost ourTabHost = getTabHost();//(TabHost) findViewById(android.R.id.tabhost);
+		TabHost ourTabHost = getTabHost();
 		TabSpec playlistTab = ourTabHost.newTabSpec("Playlist");
 		playlistTab.setIndicator("Playlist");
 		playlistTab.setContent(R.id.mainscreen_playlistLayout);
@@ -296,7 +287,6 @@ public class MainActivity extends TabActivity {
 	private void postSaveStateDependentSetup(){
 		/*
 		 * Twitter link parsing
-		 * 
 		 */
 		ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
 		twitterList.setOnItemClickListener(new OnItemClickListener(){
@@ -831,7 +821,6 @@ public class MainActivity extends TabActivity {
 		String SpinInfo = null;
 		String playlistXML = null;
 		try {
-			//SpinInfo = executeGET("http://wmfo-duke.orgs.tufts.edu:8000/7.html");
 			SpinInfo = Network.getURL("http://spinitron.com/public/newestsong.php?station=wmfo");
 			playlistXML = Network.getURL("http://spinitron.com/radio/rss.php?station=wmfo");
 		} catch (ClientProtocolException e) {
