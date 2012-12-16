@@ -29,4 +29,4 @@ Added better handling in the event of connectivity loss
 ###2012-11-18
 Added Twitter support, minor bugfixes on older Android versions
 ###2012-11-18
-Initial functional version - Ross Schlaikjer
+Initial functional version
