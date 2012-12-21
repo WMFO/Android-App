@@ -15,6 +15,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
+            android:visibility="gone"
             android:background="@drawable/shadedback_solid"
             android:orientation="vertical" >
 

@@ -5,42 +5,28 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -48,7 +34,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CalendarView.OnDateChangeListener;
@@ -68,12 +53,13 @@ import android.widget.TextView;
 
 public class MainActivity extends TabActivity {
 
-	Timer updateCurrentTimer;
-	JSONArray twitterJSON;
+	private Timer updateCurrentTimer;
+	private JSONArray twitterJSON;
 
 	boolean isLive;
-	String archiveStart;
-	String archiveEnd;
+	private String archiveStart;
+	private String archiveEnd;
+	private String playlistXML;
 
 	final static String TAG = "WMFO:SERVICE";
 
@@ -98,6 +84,7 @@ public class MainActivity extends TabActivity {
 
 		savedInstanceState.putBoolean("isLive", this.isLive);
 
+		savedInstanceState.putString("playlistXML", playlistXML);
 	}
 
 	@Override
@@ -111,6 +98,13 @@ public class MainActivity extends TabActivity {
 				AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 				if (volumeBar != null && audioManager != null ){
 					volumeBar.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+				}
+
+				final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
+				if (AudioService.isRunning != null && AudioService.isRunning){
+					playButton.setImageDrawable(getResources().getDrawable(R.drawable.stop));
+				} else {
+					playButton.setImageDrawable(getResources().getDrawable(R.drawable.play));
 				}
 			}});
 	}
@@ -130,7 +124,7 @@ public class MainActivity extends TabActivity {
 		}
 
 		postSaveStateDependentSetup();
-		
+
 	}
 
 
@@ -281,7 +275,7 @@ public class MainActivity extends TabActivity {
 			Log.d("API", "Api version " + Build.VERSION.SDK_INT + ", loading spinners");
 			setupArchivePlayerViewV8();
 		}
-		
+
 	}
 
 	private void postSaveStateDependentSetup(){
@@ -298,7 +292,7 @@ public class MainActivity extends TabActivity {
 				final List<String> URLs = extractUrls(nameText.getText().toString());
 				if (URLs.size() > 0){
 					Log.d("TWEET:CLICKED", "Found URL " + URLs.get(0));
-					
+
 					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 							MainActivity.this);
 
@@ -317,14 +311,14 @@ public class MainActivity extends TabActivity {
 							startActivity(i);
 						}
 					});
-					
+
 					AlertDialog alertDialog = alertDialogBuilder.create();
 					alertDialog.show();
-					
+
 				}
 			}});
 	}
-	
+
 	@TargetApi(11)
 	private void setupArchivePlayerView(){
 		final ImageView playButton = (ImageView) findViewById(R.id.mainscreen_Button_play);
@@ -495,8 +489,6 @@ public class MainActivity extends TabActivity {
 
 							TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
 							DJ.setText(sdf.format(toDate.getTime()));
-
-							TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
 						}});
 				}
 			}
@@ -655,8 +647,6 @@ public class MainActivity extends TabActivity {
 							TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
 							DJ.setText(sdf.format(toDate.getTime()));
 
-							TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-
 						}});
 				}
 			}
@@ -691,38 +681,48 @@ public class MainActivity extends TabActivity {
 					public void run() {
 						ListView twitterList = (ListView) findViewById(R.id.mainscreen_twitterListLayout);
 						twitterList.setAdapter(new TweetListViewAdapter(MainActivity.this, parseTwitterJSON(twitterJSON)));
-						
+
 					}});
 			}}).start();
 	}
 
 	public static List<String> extractUrls(String input) {
-        List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<String>();
 
-        Pattern pattern = Pattern.compile(
-            "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" + 
-            "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" + 
-            "|mil|biz|info|mobi|name|aero|jobs|museum" + 
-            "|travel|[a-z]{2}))(:[\\d]{1,5})?" + 
-            "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" + 
-            "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
-            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" + 
-            "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
-            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" + 
-            "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
+		Pattern pattern = Pattern.compile(
+				"\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" + 
+						"(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" + 
+						"|mil|biz|info|mobi|name|aero|jobs|museum" + 
+						"|travel|[a-z]{2}))(:[\\d]{1,5})?" + 
+						"(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" + 
+						"((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+						"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" + 
+						"(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+						"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" + 
+				"(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
 
-        Matcher matcher = pattern.matcher(input);
-        while (matcher.find()) {
-            result.add(matcher.group());
-        }
+		Matcher matcher = pattern.matcher(input);
+		while (matcher.find()) {
+			result.add(matcher.group());
+		}
 
-        return result;
-    }
-	
+		return result;
+	}
+
 	private void saveStateSetup(Bundle savedInstanceState){
 
 		if (savedInstanceState != null && savedInstanceState.containsKey("isLive")){
 			this.isLive = savedInstanceState.getBoolean("isLive");
+		}
+
+		/*
+		 * Restore playlist info
+		 */
+
+		String playlistXML = savedInstanceState.getString("playlistXML");
+		if (playlistXML != null){
+			ListView playListView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
+			playListView.setAdapter(new PlayListViewAdapter(MainActivity.this, new Playlist(playlistXML)));
 		}
 
 		/*
@@ -817,7 +817,7 @@ public class MainActivity extends TabActivity {
 	}
 
 	void setNowPlaying(){
-
+		final ListView playListView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
 		String SpinInfo = null;
 		String playlistXML = null;
 		try {
@@ -828,18 +828,42 @@ public class MainActivity extends TabActivity {
 		} catch (URISyntaxException e) {
 		}
 		if (playlistXML != null && !playlistXML.equals("")){
+
+			MainActivity.this.playlistXML = playlistXML;
+
 			final Playlist playlist = new Playlist(playlistXML);
+			if (SpinInfo != null && SpinInfo != ""){
+				SongInfo nowPlaying = new SongInfo(SpinInfo, true);
+				if (playListView.getAdapter() != null && playListView.getAdapter().getItem(0) != null && nowPlaying.equals(playListView.getAdapter().getItem(0))){
+					Log.d(TAG, "Songs are identical, not fetching art");
+					nowPlaying = (SongInfo) playListView.getAdapter().getItem(0);
+				} else {
+					JSONObject albumInfo = LastFM.getAlbumInfo(MainActivity.this, nowPlaying.artist, nowPlaying.album);
+					if (albumInfo.has("album")){
+						try {
+							albumInfo = albumInfo.getJSONObject("album");
+							if (albumInfo.has("image")){
+								JSONArray images = albumInfo.getJSONArray("image");
+								nowPlaying.parseLastFMAlbumArt(images);
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				playlist.addNowPlaying(nowPlaying);
+			}
 			runOnUiThread(new Runnable(){
 				@Override
 				public void run() {
-					ListView playListView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
+
 					int playListIndex = 0;
 					if (playListView.getAdapter() != null){
 						playListIndex = playListView.getFirstVisiblePosition();
 					}
 					playListView.setAdapter(new PlayListViewAdapter(MainActivity.this, playlist));
 					playListView.setSelectionFromTop(playListIndex, 0);
-					}
+				}
 			});
 		}
 		if (SpinInfo != null && SpinInfo != ""){

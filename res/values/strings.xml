@@ -13,4 +13,7 @@
 	<string name="LAST_FM_API_URL_SECURE">https://ws.audioscrobbler.com/2.0/?format=json</string>
 	
 	<string name="setting_LastFM_Session_Key">setting_LastFM_Session_Key</string>
+	
+	<string name="error_buffering">WMFO is buffering...</string>
+	
 </resources>

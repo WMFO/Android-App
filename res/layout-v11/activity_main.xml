@@ -16,7 +16,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:background="@drawable/shadedback_solid"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:visibility="gone" >
 
             <com.tufts.wmfo.ScrollingTextView
                 android:id="@+id/mainscreen_Track"

@@ -222,6 +222,7 @@
             android:layout_toRightOf="@+id/mainscreen_controlLayout"
             android:background="@drawable/shadedback_solid"
             android:gravity="center_vertical"
+            android:visibility="gone"
             android:orientation="vertical" >
 
             <LinearLayout

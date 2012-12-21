@@ -23,27 +23,33 @@ public final class R {
         public static final int padding_large=0x7f060002;
         public static final int padding_medium=0x7f060001;
         public static final int padding_small=0x7f060000;
+        public static final int play_controls_notification=0x7f060003;
     }
     public static final class drawable {
         public static final int bg=0x7f020000;
         public static final int bg_dark=0x7f020001;
-        public static final int ic_action_search=0x7f020002;
-        public static final int ic_launcher=0x7f020003;
-        public static final int ic_notification=0x7f020004;
-        public static final int lastfm_logo_red=0x7f020005;
-        public static final int phone=0x7f020006;
-        public static final int play=0x7f020007;
-        public static final int shadedback=0x7f020008;
-        public static final int shadedback_flipped=0x7f020009;
-        public static final int shadedback_solid=0x7f02000a;
-        public static final int stop=0x7f02000b;
-        public static final int tiled_bg=0x7f02000c;
-        public static final int volume_0=0x7f02000d;
-        public static final int volume_1=0x7f02000e;
-        public static final int volume_2=0x7f02000f;
-        public static final int white_icon=0x7f020010;
-        public static final int wmfo_icon=0x7f020011;
-        public static final int wmfo_icon_20=0x7f020012;
+        public static final int btn_playback_ff_normal_jb_dark=0x7f020002;
+        public static final int btn_playback_pause_normal_jb_dark=0x7f020003;
+        public static final int btn_playback_play=0x7f020004;
+        public static final int btn_playback_rew_normal_jb_dark=0x7f020005;
+        public static final int btn_playback_stop=0x7f020006;
+        public static final int ic_close_notification=0x7f020007;
+        public static final int ic_launcher=0x7f020008;
+        public static final int ic_notification=0x7f020009;
+        public static final int lastfm_logo_red=0x7f02000a;
+        public static final int phone=0x7f02000b;
+        public static final int play=0x7f02000c;
+        public static final int shadedback=0x7f02000d;
+        public static final int shadedback_flipped=0x7f02000e;
+        public static final int shadedback_solid=0x7f02000f;
+        public static final int stop=0x7f020010;
+        public static final int tiled_bg=0x7f020011;
+        public static final int volume_0=0x7f020012;
+        public static final int volume_1=0x7f020013;
+        public static final int volume_2=0x7f020014;
+        public static final int white_icon=0x7f020015;
+        public static final int wmfo_icon=0x7f020016;
+        public static final int wmfo_icon_20=0x7f020017;
     }
     public static final class id {
         public static final int WMFO_NOTIFICATION_ID=0x7f070000;
@@ -54,8 +60,8 @@ public final class R {
         public static final int archive_playButton=0x7f070015;
         public static final int frameLayout1=0x7f070023;
         public static final int imageView1=0x7f070001;
-        public static final int label=0x7f07002f;
-        public static final int largetext=0x7f07002e;
+        public static final int label=0x7f070034;
+        public static final int largetext=0x7f070033;
         public static final int lastFM_auth_errorMessage=0x7f070025;
         public static final int lastFM_auth_inputLayout=0x7f070024;
         public static final int lastFM_auth_loginButton=0x7f070028;
@@ -76,13 +82,21 @@ public final class R {
         public static final int mainscreen_twitterListLayout=0x7f070010;
         public static final int mainscreen_volume_control=0x7f070019;
         public static final int mainscreen_volume_icon=0x7f070018;
-        public static final int menu_about=0x7f070031;
-        public static final int menu_settings=0x7f070030;
+        public static final int menu_about=0x7f070039;
+        public static final int menu_settings=0x7f070038;
         public static final int notification_artistName=0x7f07002b;
+        public static final int notification_bg=0x7f07002e;
+        public static final int notification_closeButton=0x7f070032;
         public static final int notification_main_img=0x7f07002a;
+        public static final int notification_nextButton=0x7f070031;
+        public static final int notification_playButton=0x7f070030;
+        public static final int notification_prevButton=0x7f07002f;
         public static final int notification_stopButton=0x7f07002d;
         public static final int notification_trackName=0x7f07002c;
         public static final int nowPlayinglayout=0x7f070008;
+        public static final int playlist_currentArtist=0x7f070037;
+        public static final int playlist_currentArtwork=0x7f070035;
+        public static final int playlist_currentTrack=0x7f070036;
         public static final int spinner_fromDay=0x7f07001b;
         public static final int spinner_fromHour=0x7f07001e;
         public static final int spinner_fromMonth=0x7f07001c;
@@ -103,8 +117,9 @@ public final class R {
         public static final int lastfm_login=0x7f030002;
         public static final int notification_layout=0x7f030003;
         public static final int playlist_listview_layout=0x7f030004;
-        public static final int tweet=0x7f030005;
-        public static final int tweet_listview_layout=0x7f030006;
+        public static final int playlist_nowplaying_layout=0x7f030005;
+        public static final int tweet=0x7f030006;
+        public static final int tweet_listview_layout=0x7f030007;
     }
     public static final class menu {
         public static final int activity_main=0x7f0a0000;
@@ -117,6 +132,7 @@ public final class R {
         public static final int WMFO_STREAM_URL_LQ=0x7f080006;
         public static final int WMFO_STREAM_URL_MQ=0x7f080005;
         public static final int app_name=0x7f080000;
+        public static final int error_buffering=0x7f08000b;
         public static final int menu_about=0x7f080002;
         public static final int menu_settings=0x7f080001;
         public static final int setting_LastFM_Session_Key=0x7f08000a;

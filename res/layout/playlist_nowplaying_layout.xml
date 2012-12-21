@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center" >
+
+    <ImageView
+        android:id="@+id/playlist_currentArtwork"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/wmfo_icon_20" />
+
+    <com.tufts.wmfo.ScrollingTextView
+        android:id="@+id/playlist_currentTrack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Track"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:ellipsize="marquee" />
+    
+        <com.tufts.wmfo.ScrollingTextView
+        android:id="@+id/playlist_currentArtist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Artist - Album"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:singleLine="true"
+        android:ellipsize="marquee" />
+
+</LinearLayout>

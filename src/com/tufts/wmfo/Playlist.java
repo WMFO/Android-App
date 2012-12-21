@@ -58,4 +58,8 @@ public class Playlist {
 		return doc;
 	}
 
+	public void addNowPlaying(SongInfo songInfo) {
+		this.Songs.add(0, songInfo);
+	}
+
 }

@@ -5,17 +5,7 @@ import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,12 +14,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -37,7 +24,6 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnInfoListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
@@ -45,7 +31,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener, OnPreparedListener{
 
@@ -77,7 +63,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		appPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 		updateCurrentTimer = new Timer();
-		registerReceiver(networkBroadCastReciever, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+		//registerReceiver(networkBroadCastReciever, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
 		connectedOK = true;
 		switching = false;
 		if (connManager != null){
@@ -91,17 +77,23 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	public void onDestroy() {
 		isRunning = false;
 		Log.d(TAG, "onDestroy");
-		updateCurrentTimer.cancel();
-		mediaPlayer.stop();
-		mediaPlayer.release();
-		mediaPlayer = null;
-
+		if (updateCurrentTimer != null){
+			updateCurrentTimer.cancel();
+		}
+		if (mediaPlayer != null){
+			if (mediaPlayer.isPlaying()){
+				mediaPlayer.stop();
+			}
+			mediaPlayer.release();
+			mediaPlayer = null;
+		}
+		
 		if (ourNotificationManager != null){
 			ourNotificationManager.cancel(R.id.WMFO_NOTIFICATION_ID);
 		}
 
-		unregisterReceiver(networkBroadCastReciever);
-		if (wifiLock.isHeld()){
+		//unregisterReceiver(networkBroadCastReciever);
+		if (wifiLock != null && wifiLock.isHeld()){
 			wifiLock.release();
 		}
 	}
@@ -112,46 +104,47 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		if (intent == null){
 			Log.e("AudioService", "Intent passed to audio service was null!");
 			this.stopSelf();
-		}
-		Bundle extras = intent.getExtras();
-		if (extras.containsKey("source")){
-			if (extras.getString("source").equals(getString(R.string.WMFO_STREAM_URL_HQ))){
-				this.isLive = true;
-				if (connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() || !appPreferences.getBoolean("dropQuality", false)) {
-					Log.d(TAG, "Wifi On or no fallback");
-					String qualityLevel = appPreferences.getString("qualityLevel", "256");
-					if (qualityLevel.equals("256")){
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
-					} else if (qualityLevel.equals("128")){
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_MQ);
-					} else if (qualityLevel.equals("64")){
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_LQ);
+		} else {
+			Bundle extras = intent.getExtras();
+			if (extras.containsKey("source")){
+				if (extras.getString("source").equals(getString(R.string.WMFO_STREAM_URL_HQ))){
+					this.isLive = true;
+					if (connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() || !appPreferences.getBoolean("dropQuality", false)) {
+						Log.d(TAG, "Wifi On or no fallback");
+						String qualityLevel = appPreferences.getString("qualityLevel", "256");
+						if (qualityLevel.equals("256")){
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+						} else if (qualityLevel.equals("128")){
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_MQ);
+						} else if (qualityLevel.equals("64")){
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_LQ);
+						} else {
+							//dafuq
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+						}
 					} else {
-						//dafuq
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+						Log.d(TAG, "Wifi Off and fallback");
+						String qualityLevel = appPreferences.getString("qualityFallbackLevel", "128");
+						if (qualityLevel.equals("256")){
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+						} else if (qualityLevel.equals("128")){
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_MQ);
+						} else if (qualityLevel.equals("64")){
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_LQ);
+						} else {
+							//dafuq
+							this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
+						}
 					}
 				} else {
-					Log.d(TAG, "Wifi Off and fallback");
-					String qualityLevel = appPreferences.getString("qualityFallbackLevel", "128");
-					if (qualityLevel.equals("256")){
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
-					} else if (qualityLevel.equals("128")){
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_MQ);
-					} else if (qualityLevel.equals("64")){
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_LQ);
-					} else {
-						//dafuq
-						this.mediaSourceURL = getString(R.string.WMFO_STREAM_URL_HQ);
-					}
+					this.mediaSourceURL = extras.getString("source");
 				}
-			} else {
-				this.mediaSourceURL = extras.getString("source");
-			}
 
-		} else {
-			this.isLive = false;
+			} else {
+				this.isLive = false;
+			}
+			initMediaPlayer();
 		}
-		initMediaPlayer();
 	}
 
 	public void onPrepared(MediaPlayer mp) {
@@ -185,7 +178,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		} else {
 			notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.white_icon));
 		}
-		
+
 		if (mediaPlayer != null && mediaPlayer.isPlaying()){
 			notificationBuilder.setContentTitle((nowPlaying.length > 0) ? nowPlaying[0].artist : "Now Listening To WMFO");
 			notificationBuilder.setContentText((nowPlaying.length > 0) ? nowPlaying[0].title : "Currently streaming");
@@ -230,17 +223,16 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				updateCurrentTimer.cancel();
 				showStreamError();
 				AudioService.this.stopSelf();
-				return false;
+				return true;
 			}});
 		mediaPlayer.setOnPreparedListener(this);
 		mediaPlayer.setOnInfoListener(new OnInfoListener(){
 			@Override
 			public boolean onInfo(MediaPlayer mp, int what, int extra) {
-				Log.i("WMFO:MEDIA", "Info available: " + what + ", extra: " + extra);
+				Log.d("WMFO:MEDIA", "Info available: " + what + ", extra: " + extra);
 				if(what == 703){
-					updateCurrentTimer.cancel();
-					showStreamError();
-					AudioService.this.stopSelf();
+					Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_buffering), Toast.LENGTH_LONG);
+					return true;
 				}
 				return false;
 			}});
@@ -368,47 +360,47 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		return null;
 	}
 
-	private BroadcastReceiver networkBroadCastReciever =
-			new BroadcastReceiver() {
+	//	private BroadcastReceiver networkBroadCastReciever =
+	//			new BroadcastReceiver() {
 
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if(intent.getExtras()!=null) {
-				NetworkInfo ni=(NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
-				if(ni!=null && ni.getState()==NetworkInfo.State.CONNECTED) {
-					Log.i("WMFO:NET","Network "+ni.getTypeName()+" connected");
-					if (!AudioService.this.connectedOK && (System.currentTimeMillis() - AudioService.this.lastSawInternet) < 15000){
-						Log.d("WMFO:NET", "Less than 15 seconds since we lost data, reconnect");
-						AudioService.this.mediaPlayer.release();
-						AudioService.this.mediaPlayer = null;
-						initMediaPlayer();
-					} else if (ni.getTypeName().equals("WIFI") && !AudioService.this.switching){
-						if (!AudioService.this.currentConnection.equals("WIFI")){
-							Log.d("WMFO:NET", "Found WIFI! Connect to it");
-							AudioService.this.lastSawInternet = System.currentTimeMillis();
-							AudioService.this.mediaPlayer.release();
-							AudioService.this.mediaPlayer = null;
-							initMediaPlayer();
-						} else {
-							//Do nothing
-						}
-					} else if (ni.getTypeName().equals("mobile_mms")){
-						//Ignore
-					} else if ((System.currentTimeMillis() - AudioService.this.lastSawInternet) > 15000){
-						Log.d("WMFO:NET", "Too much time since we last had internet (" + (System.currentTimeMillis() - AudioService.this.lastSawInternet) + ") - stop");
-						updateCurrentTimer.cancel();
-						showStreamError();
-						AudioService.this.stopSelf();
-					}
-				}
-			}
-			if(intent.getExtras().getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY,Boolean.FALSE)) {
-				Log.d("WMFO:NET", "Setting last saw audio time to " + System.currentTimeMillis());
-				AudioService.this.lastSawInternet = System.currentTimeMillis();
-			}
-		}
+	//		@Override
+	//		public void onReceive(Context context, Intent intent) {
+	//			if(intent.getExtras()!=null) {
+	//				NetworkInfo ni=(NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
+	//				if(ni!=null && ni.getState()==NetworkInfo.State.CONNECTED) {
+	//					Log.i("WMFO:NET","Network "+ni.getTypeName()+" connected");
+	//					if (!AudioService.this.connectedOK && (System.currentTimeMillis() - AudioService.this.lastSawInternet) < 15000){
+	//						Log.d("WMFO:NET", "Less than 15 seconds since we lost data, reconnect");
+	//						AudioService.this.mediaPlayer.release();
+	//						AudioService.this.mediaPlayer = null;
+	//						initMediaPlayer();
+	//					} else if (ni.getTypeName().equals("WIFI") && !AudioService.this.switching){
+	//						if (!AudioService.this.currentConnection.equals("WIFI")){
+	//							Log.d("WMFO:NET", "Found WIFI! Connect to it");
+	//							AudioService.this.lastSawInternet = System.currentTimeMillis();
+	//							AudioService.this.mediaPlayer.release();
+	//							AudioService.this.mediaPlayer = null;
+	//							initMediaPlayer();
+	//						} else {
+	//							//Do nothing
+	//						}
+	//					} else if (ni.getTypeName().equals("mobile_mms")){
+	//						//Ignore
+	//					} else if ((System.currentTimeMillis() - AudioService.this.lastSawInternet) > 15000){
+	//						Log.d("WMFO:NET", "Too much time since we last had internet (" + (System.currentTimeMillis() - AudioService.this.lastSawInternet) + ") - stop");
+	//						updateCurrentTimer.cancel();
+	//						showStreamError();
+	//						AudioService.this.stopSelf();
+	//					}
+	//				}
+	//			}
+	//			if(intent.getExtras().getBoolean(ConnectivityManager.EXTRA_NO_CONNECTIVITY,Boolean.FALSE)) {
+	//				Log.d("WMFO:NET", "Setting last saw audio time to " + System.currentTimeMillis());
+	//				AudioService.this.lastSawInternet = System.currentTimeMillis();
+	//			}
+	//		}
 
-	};
+	//	};
 
 
 }

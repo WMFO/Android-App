@@ -34,6 +34,9 @@ public class SongInfo {
 	
 	@Override
 	public boolean equals(Object other){
+		if (other == null || this.artist == null || ((SongInfo) other).artist == null || this.title == null || ((SongInfo) other).title == null){
+			return false;
+		}
 		if (((SongInfo) other).artist.equals(this.artist) && ((SongInfo) other).title.equals(this.title)){
 			return true;
 		}
