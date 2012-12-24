@@ -55,7 +55,6 @@
             android:id="@android:id/tabhost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/linearLayout1"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/mainscreen_controlLayout" >
 
@@ -155,97 +154,6 @@
                 </FrameLayout>
             </LinearLayout>
         </TabHost>
-
-       <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@+id/mainscreen_controlLayout"
-            android:background="@drawable/shadedback_solid"
-            android:gravity="center_vertical"
-            android:visibility="gone"
-            android:orientation="vertical" >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:orientation="horizontal" >
-
-                <com.tufts.wmfo.ScrollingTextView
-                    android:id="@+id/mainscreen_Track"
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:singleLine="true"
-                    android:text="Track"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#fff" />
-
-                <com.tufts.wmfo.ScrollingTextView
-                    android:id="@+id/mainscreen_Album"
-                    android:visibility="gone"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:singleLine="true"
-                    android:text="Album"
-                    android:textColor="#fff" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:visibility="gone"
-                android:orientation="horizontal" >
-
-                <com.tufts.wmfo.ScrollingTextView
-                    android:id="@+id/mainscreen_Artist"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:singleLine="true"
-                    android:text="Artist"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#fff" />
-                
-                <com.tufts.wmfo.ScrollingTextView
-                    android:id="@+id/mainscreen_DJ"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:maxLines="1"
-                    android:text="DJ"
-                    android:textColor="#fff" />
-
-                <com.tufts.wmfo.ScrollingTextView
-                    android:id="@+id/mainscreen_Show"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="marquee"
-                    android:gravity="center_horizontal"
-                    android:maxLines="1"
-                    android:text="Show"
-                    android:textColor="#fff" />
-            </LinearLayout>
-        </LinearLayout>
     </RelativeLayout>
 
 </FrameLayout>

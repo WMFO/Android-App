@@ -231,7 +231,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 			public boolean onInfo(MediaPlayer mp, int what, int extra) {
 				Log.d("WMFO:MEDIA", "Info available: " + what + ", extra: " + extra);
 				if(what == 703){
-					Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_buffering), Toast.LENGTH_LONG);
+					Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_buffering), Toast.LENGTH_LONG).show();
 					return true;
 				}
 				return false;
@@ -312,9 +312,15 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 						if (oldSong != null){
 							Log.d("WMFO:SERVICE", "Old song (" + oldSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
 							if (appPreferences.getBoolean("lastFMScrobble", false)){
+								
 								if (isLive) { 
+									Log.i("WMFO:SCROBBLE", "Enabled, scrobbling");
 									new ScrobbleRequest(AudioService.this, oldSong).send(); 
+								} else {
+									Log.d("WMFO:SCROBBLE", "Enabled but not live - not scrobbling");
 								}
+							} else {
+								Log.i("WMFO:SCROBBLE", "Not enabled, not scrobbling");
 							}
 						}
 

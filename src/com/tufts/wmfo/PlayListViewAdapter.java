@@ -30,16 +30,22 @@ public class PlayListViewAdapter extends ArrayAdapter<SongInfo>{
 			rowView = inflater.inflate(R.layout.playlist_nowplaying_layout, parent, false);
 			TextView trackText = (TextView) rowView.findViewById(R.id.playlist_currentTrack);
 			TextView artistText = (TextView) rowView.findViewById(R.id.playlist_currentArtist);
+			TextView DJShow = (TextView) rowView.findViewById(R.id.playlist_showInfo);
+			TextView ArtNotFound = (TextView) rowView.findViewById(R.id.playlist_currentArtworkNotFound);
 			ImageView albumArt = (ImageView) rowView.findViewById(R.id.playlist_currentArtwork);
 			
 			trackText.setText(playlist.Songs.get(position).title);
 			artistText.setText(playlist.Songs.get(position).artist + " - " + playlist.Songs.get(position).album);
+			DJShow.setText("DJ " + playlist.Songs.get(position).DJ + " on " + playlist.Songs.get(position).showName);
 			if (playlist.Songs.get(position).artwork_large != null){
 				albumArt.setImageBitmap(playlist.Songs.get(position).artwork_large);
+				ArtNotFound.setVisibility(View.INVISIBLE);
 			} else if (playlist.Songs.get(position).artwork_medium != null){
 				albumArt.setImageBitmap(playlist.Songs.get(position).artwork_medium);
+				ArtNotFound.setVisibility(View.INVISIBLE);
 			} else {
 				albumArt.setImageResource(R.drawable.wmfo_icon_20);
+				ArtNotFound.setVisibility(View.VISIBLE);
 			}
 			
 		} else {

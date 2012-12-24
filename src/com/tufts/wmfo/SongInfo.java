@@ -1,5 +1,6 @@
 package com.tufts.wmfo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.json.JSONArray;
@@ -9,6 +10,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 public class SongInfo {
@@ -203,6 +206,82 @@ public class SongInfo {
 			}
 			
 		}
+	}
+	
+	public JSONObject toJSONObject(){
+		JSONObject ret = new JSONObject();
+		try { ret.put("title", title); } catch (JSONException e) {}
+		try { ret.put("album", album); } catch (JSONException e) {}
+		try { ret.put("artist", artist); } catch (JSONException e) {}
+		try { ret.put("spundate", spundate); } catch (JSONException e) {}
+		try { ret.put("label", label); } catch (JSONException e) {}
+		try { ret.put("DJ", DJ); } catch (JSONException e) {}
+		try { ret.put("showName", showName); } catch (JSONException e) {}
+		try { ret.put("rawDetails", rawDetails); } catch (JSONException e) {}
+		
+		try { ret.put("numListeners", numListeners); } catch (JSONException e) {}
+		try { ret.put("streamStatus", streamStatus); } catch (JSONException e) {}
+		try { ret.put("peakListeners", peakListeners); } catch (JSONException e) {}
+		try { ret.put("maxListeners", maxListeners); } catch (JSONException e) {}
+		try { ret.put("uniqueListeners", uniqueListeners); } catch (JSONException e) {}
+		try { ret.put("bitrate", bitrate); } catch (JSONException e) {}
+		
+		if (artwork_medium != null){
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			artwork_medium.compress(Bitmap.CompressFormat.PNG, 100, stream);
+			byte[] artwork_medium_bytes = stream.toByteArray();
+			String artwork_medium_string = Base64.encodeToString(artwork_medium_bytes, Base64.DEFAULT);
+			try { ret.put("artwork_medium", artwork_medium_string); } catch (JSONException e) {}
+		}
+		
+		if (artwork_large != null){
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			artwork_large.compress(Bitmap.CompressFormat.PNG, 100, stream);
+			byte[] artwork_medium_bytes = stream.toByteArray();
+			String artwork_medium_string = Base64.encodeToString(artwork_medium_bytes, Base64.DEFAULT);
+			try { ret.put("artwork_large", artwork_medium_string); } catch (JSONException e) {}
+		}
+		
+		return ret;
+	}
+	
+	public SongInfo(JSONObject SongJSON){
+		try { this.title = SongJSON.getString("title"); } catch (JSONException e) {}
+		try { this.album = SongJSON.getString("album"); } catch (JSONException e) {}
+		try { this.artist = SongJSON.getString("artist"); } catch (JSONException e) {}
+		try { this.spundate = SongJSON.getString("spundate"); } catch (JSONException e) {}
+		try { this.label = SongJSON.getString("label"); } catch (JSONException e) {}
+		try { this.DJ = SongJSON.getString("DJ"); } catch (JSONException e) {}
+		try { this.showName = SongJSON.getString("showName"); } catch (JSONException e) {}
+		try { this.rawDetails = SongJSON.getString("rawDetails"); } catch (JSONException e) {}
+		
+		try { this.numListeners = SongJSON.getInt("numListeners"); } catch (JSONException e) {}
+		try { this.streamStatus = SongJSON.getInt("streamStatus"); } catch (JSONException e) {}
+		try { this.peakListeners = SongJSON.getInt("peakListeners"); } catch (JSONException e) {}
+		try { this.maxListeners = SongJSON.getInt("maxListeners"); } catch (JSONException e) {}
+		try { this.uniqueListeners = SongJSON.getInt("uniqueListeners"); } catch (JSONException e) {}
+		try { this.bitrate = SongJSON.getInt("bitrate"); } catch (JSONException e) {}
+
+		if (SongJSON.has("artwork_medium")){
+			byte[] artwork_medium_bytes;
+			try {
+				artwork_medium_bytes = Base64.decode(SongJSON.getString("artwork_medium"), Base64.DEFAULT);
+				this.artwork_medium = BitmapFactory.decodeByteArray(artwork_medium_bytes, 0, artwork_medium_bytes.length);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (SongJSON.has("artwork_large")){
+			byte[] artwork_large_bytes;
+			try {
+				artwork_large_bytes = Base64.decode(SongJSON.getString("artwork_large"), Base64.DEFAULT);
+				this.artwork_large = BitmapFactory.decodeByteArray(artwork_large_bytes, 0, artwork_large_bytes.length);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+			
 	}
 
 }

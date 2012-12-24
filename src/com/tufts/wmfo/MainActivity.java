@@ -57,9 +57,9 @@ public class MainActivity extends TabActivity {
 	private JSONArray twitterJSON;
 
 	boolean isLive;
-	private String archiveStart;
-	private String archiveEnd;
 	private String playlistXML;
+
+	private SongInfo nowPlaying = null;
 
 	final static String TAG = "WMFO:SERVICE";
 
@@ -71,20 +71,13 @@ public class MainActivity extends TabActivity {
 			savedInstanceState.putString("tweets", twitterJSON.toString());
 		}
 
-		TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
-		savedInstanceState.putString("nowplaying_track", Track.getText().toString());
-		TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
-		savedInstanceState.putString("nowplaying_artist", Artist.getText().toString());
-		TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
-		savedInstanceState.putString("nowplaying_album", Album.getText().toString());
-		TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
-		savedInstanceState.putString("nowplaying_dj", DJ.getText().toString());
-		TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-		savedInstanceState.putString("nowplaying_show", Show.getText().toString());
-
 		savedInstanceState.putBoolean("isLive", this.isLive);
 
 		savedInstanceState.putString("playlistXML", playlistXML);
+
+		if (nowPlaying != null){
+			savedInstanceState.putString("nowPlaying", nowPlaying.toJSONObject().toString());
+		}
 	}
 
 	@Override
@@ -448,10 +441,6 @@ public class MainActivity extends TabActivity {
 				} else {
 					//Play dat shit
 					Log.d("ARCHIVES", "Playing from (" + fromDate.toString() + ") to (" + toDate.toString() + ")");
-					MainActivity.this.isLive = false;
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					MainActivity.this.archiveStart = sdf.format(fromDate.getTime());
-					MainActivity.this.archiveEnd = sdf.format(toDate.getTime());
 					final String archiveURL = "http://wmfo-duke.orgs.tufts.edu/cgi-bin/castbotv2?" + 
 							"s-year=" + fromDate.get(Calendar.YEAR) + 
 							"&s-month=" + (fromDate.get(Calendar.MONTH) + 1) + 
@@ -475,20 +464,6 @@ public class MainActivity extends TabActivity {
 							startIntent.putExtra("source", archiveURL);
 							startService(startIntent);
 							playButton.setImageDrawable(getResources().getDrawable(R.drawable.stop));
-
-							TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
-							Track.setText("Playing archives");
-
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-							TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
-							Artist.setText(sdf.format(fromDate.getTime()));
-
-							TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
-							Album.setText(" to ");
-
-							TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
-							DJ.setText(sdf.format(toDate.getTime()));
 						}});
 				}
 			}
@@ -605,9 +580,6 @@ public class MainActivity extends TabActivity {
 				} else {
 					//Play dat shit
 					MainActivity.this.isLive = false;
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					MainActivity.this.archiveStart = sdf.format(fromDate.getTime());
-					MainActivity.this.archiveEnd = sdf.format(toDate.getTime());
 					Log.d("ARCHIVES", "Playing from (" + fromDate.toString() + ") to (" + toDate.toString() + ")");
 					final String archiveURL = "http://wmfo-duke.orgs.tufts.edu/cgi-bin/castbotv2?" + 
 							"s-year=" + fromDate.get(Calendar.YEAR) + 
@@ -632,21 +604,6 @@ public class MainActivity extends TabActivity {
 							startIntent.putExtra("source", archiveURL);
 							startService(startIntent);
 							playButton.setImageDrawable(getResources().getDrawable(R.drawable.stop));
-
-							TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
-							Track.setText("Playing archives");
-
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-							TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
-							Artist.setText(sdf.format(fromDate.getTime()));
-
-							TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
-							Album.setText(" to ");
-
-							TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
-							DJ.setText(sdf.format(toDate.getTime()));
-
 						}});
 				}
 			}
@@ -716,6 +673,19 @@ public class MainActivity extends TabActivity {
 		}
 
 		/*
+		 * Restore now playing info
+		 */
+
+		if (savedInstanceState.containsKey("nowPlaying")){
+			Log.d("SAVESTATESETUP", "Saved state has now playing; restoring.");
+			try {
+				this.nowPlaying = new SongInfo(new JSONObject(savedInstanceState.getString("nowPlaying")));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		/*
 		 * Restore playlist info
 		 */
 
@@ -723,32 +693,9 @@ public class MainActivity extends TabActivity {
 		if (playlistXML != null){
 			ListView playListView = (ListView) findViewById(R.id.mainscreen_playlistLayout);
 			playListView.setAdapter(new PlayListViewAdapter(MainActivity.this, new Playlist(playlistXML)));
+			((PlayListViewAdapter)playListView.getAdapter()).insert(nowPlaying, 0);
 		}
 
-		/*
-		 * Restore now playing text
-		 */
-
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
-			Track.setText(savedInstanceState.getString("nowplaying_track"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
-			Artist.setText(savedInstanceState.getString("nowplaying_artist"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
-			Album.setText(savedInstanceState.getString("nowplaying_album"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
-			DJ.setText(savedInstanceState.getString("nowplaying_dj"));
-		}
-		if (savedInstanceState != null && savedInstanceState.containsKey("nowplaying_track")){
-			TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-			Show.setText(savedInstanceState.getString("nowplaying_show"));
-		}
 
 		/*
 		 * Restore tweet data
@@ -833,7 +780,7 @@ public class MainActivity extends TabActivity {
 
 			final Playlist playlist = new Playlist(playlistXML);
 			if (SpinInfo != null && SpinInfo != ""){
-				SongInfo nowPlaying = new SongInfo(SpinInfo, true);
+				nowPlaying = new SongInfo(SpinInfo, true);
 				if (playListView.getAdapter() != null && playListView.getAdapter().getItem(0) != null && nowPlaying.equals(playListView.getAdapter().getItem(0))){
 					Log.d(TAG, "Songs are identical, not fetching art");
 					nowPlaying = (SongInfo) playListView.getAdapter().getItem(0);
@@ -866,33 +813,6 @@ public class MainActivity extends TabActivity {
 				}
 			});
 		}
-		if (SpinInfo != null && SpinInfo != ""){
-			final SongInfo nowPlaying = new SongInfo(SpinInfo, true);
-			runOnUiThread(new Runnable(){
-				@Override
-				public void run() {
-					TextView Track = (TextView) findViewById(R.id.mainscreen_Track);
-					TextView Artist = (TextView) findViewById(R.id.mainscreen_Artist);
-					TextView Album = (TextView) findViewById(R.id.mainscreen_Album);
-					TextView DJ = (TextView) findViewById(R.id.mainscreen_DJ);
-					TextView Show = (TextView) findViewById(R.id.mainscreen_Show);
-
-					if (isLive){
-						Track.setText(nowPlaying.title);
-						Artist.setText("By " + nowPlaying.artist);
-						Album.setText("From " + nowPlaying.album);
-						DJ.setText("Spun by " + nowPlaying.DJ);
-						Show.setText("On the show " + nowPlaying.showName);
-					} else {
-						Track.setText("Playing archives");
-						Artist.setText(archiveStart);
-						Album.setText(" to ");
-						DJ.setText(archiveEnd);
-						Show.setText("");
-					}
-				}});
-		}
 	}
-
 }
 

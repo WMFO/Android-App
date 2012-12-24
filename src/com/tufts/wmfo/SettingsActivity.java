@@ -80,6 +80,15 @@ public class SettingsActivity extends PreferenceActivity {
 			lastFMSetup.setSummary("Log out of Last.FM");
 			scrobblePreference.setEnabled(true);
 		}
+		
+		scrobblePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				Log.d("WMFO:SETTINGS", "Scrobbles: " + ((Boolean) newValue).toString());
+				return true;
+			}
+		});
+		
 		lastFMSetup.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {

@@ -5,12 +5,39 @@
     android:orientation="vertical"
     android:gravity="center" >
 
-    <ImageView
+    <com.tufts.wmfo.ScrollingTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Now Playing"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:ellipsize="marquee" />
+    
+    <FrameLayout
+        android:id="@+id/playlist_currentArtworkFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        >
+        
+        <ImageView
         android:id="@+id/playlist_currentArtwork"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="10dp"
         android:src="@drawable/wmfo_icon_20" />
+
+        <TextView
+            android:id="@+id/playlist_currentArtworkNotFound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Art not found"
+            android:layout_gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+        </FrameLayout>
 
     <com.tufts.wmfo.ScrollingTextView
         android:id="@+id/playlist_currentTrack"
@@ -35,4 +62,14 @@
         android:singleLine="true"
         android:ellipsize="marquee" />
 
+        <com.tufts.wmfo.ScrollingTextView
+        android:id="@+id/playlist_showInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DJ - Show"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:singleLine="true"
+        android:ellipsize="marquee" />
 </LinearLayout>
