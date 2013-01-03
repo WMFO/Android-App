@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tufts.wmfo"
-    android:versionCode="27"
+    android:versionCode="28"
     android:versionName="Beta" >
 
     <uses-sdk
@@ -40,7 +40,6 @@
                 </action>
             </intent-filter>
         </activity>
-        
         <activity
             android:name="LastFMLoginActivity"
             android:label="@string/app_name"
@@ -51,9 +50,38 @@
                 </action>
             </intent-filter>
         </activity>
-        
-         <activity
+        <activity
             android:name="AboutActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" >
+                </action>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="ArchiveActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" >
+                </action>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="PlaylistActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" >
+                </action>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="TwitterActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan" >
@@ -66,7 +94,6 @@
         <service
             android:name=".AudioService"
             android:enabled="true" />
-
     </application>
 
 </manifest>
