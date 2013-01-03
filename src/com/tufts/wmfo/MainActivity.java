@@ -198,16 +198,12 @@ public class MainActivity extends TabActivity {
 		 * Update timers
 		 * - Now playing timer should run if live streaming
 		 */
-		if (AudioService.isRunning != null && AudioService.isRunning && !AudioService.isLive){
-			//Do not pull now playing live, since it will not be relevant
-		} else {
-			updateCurrentTimer = new Timer();
-			updateCurrentTimer.scheduleAtFixedRate(new TimerTask(){
-				@Override
-				public void run() {
-					setNowPlaying();
-				}}, 0, 10000);
-		}
+		updateCurrentTimer = new Timer();
+		updateCurrentTimer.scheduleAtFixedRate(new TimerTask(){
+			@Override
+			public void run() {
+				setNowPlaying();
+			}}, 0, 10000);
 
 
 		/*
@@ -251,6 +247,9 @@ public class MainActivity extends TabActivity {
 		playlistTab.setContent(R.id.mainscreen_playlistLayout);
 		ourTabHost.addTab(playlistTab);
 
+		ListView playlist = (ListView) findViewById(R.id.mainscreen_playlistLayout);
+		playlist.setEmptyView(findViewById(R.id.empty));
+		
 		TabSpec tweetsTab = ourTabHost.newTabSpec("Tweets");
 		tweetsTab.setIndicator("Tweets");
 		tweetsTab.setContent(R.id.mainscreen_twitterListLayout);

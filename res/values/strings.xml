@@ -14,6 +14,8 @@
 	
 	<string name="setting_LastFM_Session_Key">setting_LastFM_Session_Key</string>
 	
-	<string name="error_buffering">WMFO is buffering...</string>
+	<string name="error_buffering">WMFO is buffering</string>
+	
+	<string name="Loading">Loading</string>
 	
 </resources>
