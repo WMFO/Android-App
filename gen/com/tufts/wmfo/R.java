@@ -75,6 +75,7 @@ public final class R {
         public static final int mainscreen_volume_control=0x7f070019;
         public static final int mainscreen_volume_icon=0x7f070018;
         public static final int menu_about=0x7f070037;
+        public static final int menu_feedback=0x7f070038;
         public static final int menu_settings=0x7f070036;
         public static final int notification_artistName=0x7f070026;
         public static final int notification_bg=0x7f070029;
@@ -126,19 +127,22 @@ public final class R {
         public static final int activity_main=0x7f0a0000;
     }
     public static final class string {
-        public static final int LAST_FM_API_URL=0x7f080008;
-        public static final int LAST_FM_API_URL_SECURE=0x7f080009;
-        public static final int Loading=0x7f08000c;
-        public static final int WMFO_PHONE_NUMBER=0x7f080007;
-        public static final int WMFO_STREAM_URL_HQ=0x7f080004;
-        public static final int WMFO_STREAM_URL_LQ=0x7f080006;
-        public static final int WMFO_STREAM_URL_MQ=0x7f080005;
+        public static final int LAST_FM_API_URL=0x7f08000b;
+        public static final int LAST_FM_API_URL_SECURE=0x7f08000c;
+        public static final int Loading=0x7f08000f;
+        public static final int WMFO_PHONE_NUMBER=0x7f08000a;
+        public static final int WMFO_STREAM_URL_HQ=0x7f080007;
+        public static final int WMFO_STREAM_URL_LQ=0x7f080009;
+        public static final int WMFO_STREAM_URL_MQ=0x7f080008;
         public static final int app_name=0x7f080000;
-        public static final int error_buffering=0x7f08000b;
+        public static final int error_buffering=0x7f08000e;
+        public static final int feedback_email=0x7f080004;
+        public static final int feedback_subject=0x7f080005;
         public static final int menu_about=0x7f080002;
+        public static final int menu_feedback=0x7f080003;
         public static final int menu_settings=0x7f080001;
-        public static final int setting_LastFM_Session_Key=0x7f08000a;
-        public static final int title_activity_main=0x7f080003;
+        public static final int setting_LastFM_Session_Key=0x7f08000d;
+        public static final int title_activity_main=0x7f080006;
     }
     public static final class style {
         public static final int AppTheme=0x7f090000;

@@ -8,4 +8,9 @@
         android:title="@string/menu_about"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    
+    <item android:id="@+id/menu_feedback"
+        android:title="@string/menu_feedback"
+        android:orderInCategory="200"
+        android:showAsAction="never" />
 </menu>

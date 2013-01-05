@@ -256,6 +256,12 @@ public class MainActivity extends TabActivity {
 		case R.id.menu_about:
 			startActivity(new Intent(this, AboutActivity.class));
 			return true;
+		case R.id.menu_feedback:
+			Intent emailIntent = new Intent(Intent.ACTION_SEND);
+			emailIntent.setType("plain/text");
+	        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{ getResources().getString(R.string.feedback_email) });
+	        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.feedback_subject));
+	        startActivity(Intent.createChooser(emailIntent, "Send email using"));
 		default:
 			return super.onOptionsItemSelected(item);
 		}
