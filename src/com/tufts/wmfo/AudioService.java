@@ -89,10 +89,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		}
 		
 		if (ourNotificationManager != null){
-			ourNotificationManager.cancel(R.id.WMFO_NOTIFICATION_ID);
+			Log.d(TAG, "Cancelling all notifications");
+			ourNotificationManager.cancelAll();
 		}
 
-		//unregisterReceiver(networkBroadCastReciever);
 		if (wifiLock != null && wifiLock.isHeld()){
 			wifiLock.release();
 		}
@@ -182,6 +182,11 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		if (mediaPlayer != null && mediaPlayer.isPlaying()){
 			notificationBuilder.setContentTitle((nowPlaying.length > 0) ? nowPlaying[0].artist : "Now Listening To WMFO");
 			notificationBuilder.setContentText((nowPlaying.length > 0) ? nowPlaying[0].title : "Currently streaming");
+			if (nowPlaying.length > 0){
+				notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
+		         .bigText(nowPlaying[0].title + " by " + nowPlaying[0].artist + "\n" + "From " + nowPlaying[0].album + "\n" + "Spun by " + nowPlaying[0].DJ + " on " + nowPlaying[0].showName));
+			}
+			
 		} else {
 			notificationBuilder.setTicker("Loading WMFO Stream...");
 			notificationBuilder.setContentTitle("Loading WMFO Stream...");
@@ -222,6 +227,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 				Log.e("WMFO:MEDIA", "Media player has crashed! Code " + what + " Extra: " + extra);
 				updateCurrentTimer.cancel();
 				showStreamError();
+				if (mediaPlayer != null){
+					mediaPlayer.release();
+					mediaPlayer = null;
+				}
 				AudioService.this.stopSelf();
 				return true;
 			}});
@@ -352,7 +361,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 						setNotification(nowPlaying);
 					}
 
-					if (isLive) { new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send(); }
+					if (isLive && appPreferences.getBoolean("lastFMScrobble", false)) { new LastFMNowPlayingRequest(AudioService.this, nowPlaying).send(); }
 
 				} else {
 					AudioService.this.connectedOK=false;

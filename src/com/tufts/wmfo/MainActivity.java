@@ -147,9 +147,11 @@ public class MainActivity extends TabActivity {
 			@Override
 			public void onClick(View v) {
 				if (AudioService.isRunning != null && AudioService.isRunning){
+					Log.d(TAG, "Stopping audio service");
 					stopService(new Intent(MainActivity.this, AudioService.class));
 					playButton.setImageDrawable(getResources().getDrawable(R.drawable.play));
 				} else {
+					Log.d(TAG, "Starting audio service");
 					Intent startIntent = new Intent(MainActivity.this, AudioService.class);
 					startIntent.putExtra("source", getString(R.string.WMFO_STREAM_URL_HQ));
 					startService(startIntent);
