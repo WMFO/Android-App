@@ -26,7 +26,7 @@ public class PlayListViewAdapter extends ArrayAdapter<SongInfo>{
 
 		View rowView = null;
 
-		if (position == 0 && playlist.Songs.get(position).title != null){
+		if (position == 0 && playlist != null && playlist.Songs != null && playlist.Songs.get(position).title != null){
 			rowView = inflater.inflate(R.layout.playlist_nowplaying_layout, parent, false);
 			TextView trackText = (TextView) rowView.findViewById(R.id.playlist_currentTrack);
 			TextView artistText = (TextView) rowView.findViewById(R.id.playlist_currentArtist);

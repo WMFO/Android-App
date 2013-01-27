@@ -92,7 +92,7 @@ public class PlaylistActivity extends Activity {
 			final Playlist playlist = new Playlist(playlistXML);
 			if (SpinInfo != null && SpinInfo != ""){
 				nowPlaying = new SongInfo(SpinInfo, true);
-				if (playListView.getAdapter() != null && playListView.getAdapter().getItem(0) != null && nowPlaying.equals(playListView.getAdapter().getItem(0))){
+				if (playListView.getAdapter() != null && !playListView.getAdapter().isEmpty() && playListView.getAdapter().getItem(0) != null && nowPlaying.equals(playListView.getAdapter().getItem(0))){
 					Log.d(TAG, "Songs are identical, not fetching art");
 					nowPlaying = (SongInfo) playListView.getAdapter().getItem(0);
 				} else {

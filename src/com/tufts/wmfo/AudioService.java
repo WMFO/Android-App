@@ -24,6 +24,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnInfoListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
@@ -67,7 +68,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		connectedOK = true;
 		switching = false;
 		if (connManager != null){
-			currentConnection = connManager.getActiveNetworkInfo().getTypeName();
+			NetworkInfo ni =  connManager.getActiveNetworkInfo();
+			if (ni != null){
+				currentConnection = ni.getTypeName();
+			}
 		}
 		Log.d("WMFO:SERVICE", "Connected to " + currentConnection);
 		this.lastSawInternet = System.currentTimeMillis();
@@ -151,7 +155,12 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		mp.start();
 		connectedOK = true;
 		switching = false;
-		currentConnection = connManager.getActiveNetworkInfo().getTypeName();
+		if (connManager != null){
+			NetworkInfo ni =  connManager.getActiveNetworkInfo();
+			if (ni != null){
+				currentConnection = ni.getTypeName();
+			}
+		}
 		Log.d("WMFO:SERVICE", "Prepared on " + currentConnection);
 		updateCurrentTimer.scheduleAtFixedRate(new TimerTask(){
 			@Override
@@ -278,6 +287,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 			if (mediaPlayer.isPlaying()) mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
+			this.stopSelf();
 			break;
 
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -321,7 +331,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 						if (oldSong != null){
 							Log.d("WMFO:SERVICE", "Old song (" + oldSong.title + ") over, now scrobbling it and playing " + nowPlaying.title);
 							if (appPreferences.getBoolean("lastFMScrobble", false)){
-								
 								if (isLive) { 
 									Log.i("WMFO:SCROBBLE", "Enabled, scrobbling");
 									new ScrobbleRequest(AudioService.this, oldSong).send(); 

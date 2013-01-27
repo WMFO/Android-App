@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tufts.wmfo"
-    android:versionCode="30"
+    android:versionCode="31"
     android:versionName="Beta" >
 
     <uses-sdk
