@@ -5,4 +5,15 @@ bin/
 .lvm_history
 
 #Contains sensetive API keys
-src/com/tufts/wmfo/Auth.java
+app/src/main/java/com/tufts/wmfo/Auth.java
+
+# Android-studio
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+app/build
+app/app-release.apk
+app/manifest-merger-release-report.txt
